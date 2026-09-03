@@ -1,0 +1,62 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "black-account-checker",
+  "skills": {
+    "paths": [".opencode/skills"]
+  },
+  "agent": {
+    "black-account-checker": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "mode": "primary",
+      "description": "查黑账 — 审计、欺诈检测与可疑账户调查",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "cat *": "allow",
+          "grep *": "allow",
+          "ls *": "allow",
+          "head *": "allow",
+          "tail *": "allow",
+          "wc *": "allow",
+          "find *": "allow",
+          "awk *": "allow",
+          "sort *": "allow",
+          "uniq *": "allow",
+          "curl *": "allow",
+          "*": "ask"
+        }
+      },
+      "skills": ["black-account-checker", "quantitative-fraud-metrics", "governance-redflags-skill"]
+    },
+    "financial-researcher": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "mode": "subagent",
+      "description": "金融研究员 — 权威信息检索与证据审查",
+      "skills": ["financial-research-skill", "financial-parser-skill"]
+    },
+    "financial-analyst": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "mode": "subagent",
+      "description": "金融分析师 — 多文档财务推理与数据协调",
+      "skills": ["multi-doc-reasoning-skill"]
+    },
+    "valuation-expert": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "mode": "subagent",
+      "description": "估值专家 — 财务建模与电子表格工作流",
+      "skills": ["valuation-modeling-skill", "peer-comparison-skill", "excel-export-skill"]
+    },
+    "report-writer": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "mode": "subagent",
+      "description": "报告撰写专家 — 严格带脚注的合规研报",
+      "skills": ["professional-reporting-skill", "citation-engine-skill"]
+    },
+    "adversarial-skeptic": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "mode": "subagent",
+      "description": "做空者/红队质询 — 压力测试与假设挑战",
+      "skills": ["adversarial-skeptic-skill"]
+    }
+}
+}

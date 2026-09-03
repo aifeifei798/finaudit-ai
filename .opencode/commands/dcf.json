@@ -1,0 +1,7 @@
+{
+  "name": "dcf",
+  "description": "纯估值建模模式：三表清洗与 DCF 测算",
+  "agents": ["valuation-expert"],
+  "skills": ["financial-parser-skill", "valuation-modeling-skill", "excel-export-skill"],
+  "prompt": "针对 {{target}} 执行纯估值建模。请调用 financial-parser-skill 进行三表清洗，valuation-modeling-skill 进行 DCF 测算，并使用 excel-export-skill 在 workspace/models/ 生成 .xlsx 活表。跳过文字废话，直奔数据与模型。"
+}

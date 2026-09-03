@@ -1,0 +1,7 @@
+{
+  "name": "report",
+  "description": "全流程重型研报：6 大 Agent 闭环交付",
+  "agents": ["financial-researcher", "financial-analyst", "valuation-expert", "adversarial-skeptic", "report-writer", "black-account-checker"],
+  "skills": ["financial-research-skill", "financial-parser-skill", "multi-doc-reasoning-skill", "valuation-modeling-skill", "peer-comparison-skill", "excel-export-skill", "adversarial-skeptic-skill", "professional-reporting-skill", "citation-engine-skill"],
+  "prompt": "针对 {{target}} 执行全流程重型研报。流程：1. financial-researcher 检索权威信源；2. financial-parser-skill 提取结构化数据；3. financial-analyst 对齐多文档数据；4. valuation-expert 建模估值；5. adversarial-skeptic 进行红队质询；6. report-writer 出具最终带脚注的合规研报。请确保每一步均严格执行并记录在 pipeline-state.json 中。"
+}

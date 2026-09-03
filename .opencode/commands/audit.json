@@ -1,0 +1,7 @@
+{
+  "name": "audit",
+  "description": "闪电排雷模式：快速检测财务与治理高危风险",
+  "agents": ["black-account-checker"],
+  "skills": ["black-account-checker", "quantitative-fraud-metrics", "governance-redflags-skill"],
+  "prompt": "针对 {{target}} 执行闪电排雷。请调用 black-account-checker、quantitative-fraud-metrics 和 governance-redflags-skill，在 2 分钟内出具一份《财务与治理高危风险排雷体检单》，重点列出做空机会或暴雷隐患。"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "finaudit-ai",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@opencode-ai/plugin": "^1.18.19",
+    "@types/node": "^26.4.1",
+    "typescript": "^7.0.2"
+  }
+}
