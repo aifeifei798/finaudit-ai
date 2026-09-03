@@ -28,4 +28,5 @@ To avoid legal risks and commercial defamation, all reports must use cautious, e
 
 ## Review Readiness
 - Every judgment must be backed by at least one piece of evidence.
-- All calculations must be reproducible from the provided steps.
+## HITL Gate: Pre-Publication
+The final report MUST NOT be published until all challenges raised by the Adversarial Skeptic have been signed off. The report-writer must include a "Challenge Resolution Summary" in the appendix, documenting how each skeptic's point was addressed or why it was dismissed.

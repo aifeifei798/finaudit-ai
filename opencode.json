@@ -26,7 +26,7 @@
           "*": "ask"
         }
       },
-       "skills": ["black-account-checker"]
+        "skills": ["black-account-checker", "quantitative-fraud-metrics", "governance-redflags-skill"]
     },
     "financial-researcher": {
       "model": "anthropic/claude-sonnet-4-6",
@@ -38,13 +38,13 @@
       "model": "anthropic/claude-sonnet-4-6",
       "mode": "subagent",
       "description": "金融分析师 — 多文档财务推理与数据协调",
-       "skills": ["multi-doc-reasoning-skill", "peer-comparison-skill", "quantitative-fraud-metrics", "governance-redflags-skill"]
+        "skills": ["multi-doc-reasoning-skill"]
     },
     "valuation-expert": {
       "model": "anthropic/claude-sonnet-4-6",
       "mode": "subagent",
       "description": "估值专家 — 财务建模与电子表格工作流",
-       "skills": ["valuation-modeling-skill", "excel-export-skill"]
+        "skills": ["valuation-modeling-skill", "peer-comparison-skill", "excel-export-skill"]
     },
     "report-writer": {
       "model": "anthropic/claude-sonnet-4-6",

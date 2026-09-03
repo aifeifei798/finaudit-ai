@@ -21,4 +21,5 @@ Present findings as a **"Challenge Log"**:
 - **Assumption**: "Revenue will grow at 15% CAGR."
 - **Skeptic's Challenge**: "Market saturation is evident; competitor X just launched a cheaper alternative."
 - **Required Evidence**: "Provide market share data for the last 3 years."
-- **Impact**: "If growth is only 5%, valuation drops by 30%."
+## HITL Gate: Pre-Publication
+All findings in the Challenge Log must be formally signed off by the user or a designated reviewer before the report-writer can finalize the publication. The skeptic must explicitly flag each challenge as "Resolved", "Accepted", or "Rejected with Justification".

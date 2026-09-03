@@ -20,3 +20,10 @@ When comparing data across different reporting periods, always prioritize the mo
 - **Trend Analysis**: Compare the same metric across multiple periods to identify anomalies.
 - **Consistency Check**: Ensure that the "Summary" section of a report matches the detailed "Financial Tables".
 - **Gap Analysis**: Identify what is missing from the official filings that is mentioned in research notes.
+
+## HITL Gate: Pre-Valuation
+Before passing data to the Valuation Expert, the Financial Analyst MUST request explicit confirmation from the user if:
+- There are material conflicts between different data sources that could not be resolved by the priority rules.
+- Abnormal adjustments (e.g., >10% of Net Income) are made to normalize the data.
+- Key assumptions for the valuation model are based on non-audited or speculative sources.
+The analyst must present the conflict/adjustment and the proposed resolution, then wait for user approval.
