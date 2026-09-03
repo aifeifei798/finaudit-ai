@@ -7,11 +7,11 @@ FinAudit AI is an AI-powered framework designed for high-precision financial aud
 The suite employs specialized agents to ensure rigorous analysis and compliance:
 
 - **Black Account Checker**: Audits transaction logs for fraud detection, AML (Anti-Money Laundering) analysis, and suspicious account investigation.
-- **Financial Researcher**: Handles IR source verification and authoritative data retrieval.
-- **Financial Analyst**: Performs multi-document reasoning and data coordination across financial statements.
-- **Valuation Expert**: Builds financial models, performs peer comparisons, and exports to Excel.
+- **Financial Researcher**: Handles authoritative data retrieval and high-fidelity structured data extraction (parsing) from raw filings.
+- **Financial Analyst**: Central analysis hub; performs multi-document reasoning, peer benchmarking, quantitative fraud metrics (e.g., M-Score), and corporate governance red-flag detection.
+- **Valuation Expert**: Builds financial models (DCF, WACC) and exports functional Excel models.
 - **Adversarial Skeptic**: Red-teams the findings to challenge assumptions and identify blind spots.
-- **Report Writer**: Synthesizes all findings into a professional, audit-compliant report with strict citations.
+- **Report Writer**: Synthesizes all findings into a professional, audit-compliant report with strict citations and neutral language.
 
 ## 📂 Workspace Architecture
 
