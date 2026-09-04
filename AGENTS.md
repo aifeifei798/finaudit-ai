@@ -1,6 +1,6 @@
-# Agents Guide - FinAudit AI (v1.2.0 全栈)
+# Agents Guide - FinAudit AI (v1.3.0 全栈)
 
-## Agents & Skills (18 agents, T1/T2/T3 分级；M-Score/治理归 black-account-checker)
+## Agents & Skills (19 agents, T1/T2/T3 分级；排雷归 fraud-screener，流水取证归 black-account-checker)
 | 层 | Agent | Skills | Tier |
 |---|---|---|---|
 | L0 | `orchestrator` (Primary, default) | multi-doc-reasoning, citation-engine, market-adapter | T2 |
@@ -9,7 +9,8 @@
 | L1 | `filing-collector` | financial-research, market-adapter | T1 |
 | L1 | `financial-researcher` | financial-research, financial-parser | T1 |
 | L1 | `evidence-locker` | evidence-locker, citation-engine | T1 |
-| L2 | `black-account-checker` (Primary, 法务审计) | black-account-checker, quantitative-fraud-metrics, governance-redflags | T2 |
+| L2 | `fraud-screener` (主链排雷) | quantitative-fraud-metrics, governance-redflags, market-adapter | T2 |
+| L2 | `black-account-checker` (Primary, 流水取证旁路) | black-account-checker | T2 |
 | L2 | `financial-analyst` (Pre-Valuation 发起) | multi-doc-reasoning | T2 |
 | L2 | `industry-peer-analyst` | peer-comparison, macro-context, esg-redflag, market-adapter | T2 |
 | L2 | `sentiment-event-analyst` (旁路) | sentiment-event | T1 |
@@ -24,6 +25,7 @@
 
 - 模型分级见 `.opencode/model-tiers.json` (T1 抽取小模型 / T2 推理大模型 / T3 异构裁判)；`task_type→tier` 由 orchestrator 硬路由；T1 低置信 cascade 到 T2；调用记 `model_id/prompt_hash/token/cost` 入 `run_log.jsonl`。
 - 19 skills = 12 keep + 7 new (`market-adapter`, `macro-context`, `sentiment-event`, `esg-redflag`, `portfolio-construction`, `chart-visualization`, `evidence-locker`)。
+- 职责切分 (v1.3.0)：`fraud-screener` 只做上市公司排雷（输入`extracted/`，Python-first，不碰私有流水），进 `audit/report` 主链；`black-account-checker` 只做私有流水六步法取证（输入用户CSV/Excel），默认旁路，仅 `black-account` 命令或用户另附流水时调用。
 
 ## Workspace (Canonical v1.2.0)
 - `workspace/targets/{TICKER}_{PERIOD}/`: 独立沙盒 (唯一写入目标)。
@@ -42,7 +44,7 @@
 - **Pre-Publication**：skeptic Log 全关 + compliance pass + judge pass → gate-keeper 写 `skeptic: SIGNED_OFF`，report-writer 方可 FINAL。
 
 ## Infrastructure & Tooling
-- **Config**: `opencode.json` (18 agent) + `.opencode/model-tiers.json` (T1/T2/T3)。
+- **Config**: `opencode.json` (19 agent) + `.opencode/model-tiers.json` (T1/T2/T3)。
 - **Safety**: hook 拦截 rm-rf/dd/fork/curl-wget/curl|sh/python网络/env泄漏/git-force；只读自动放行。
 - **Env**: `BLACK_ACCOUNT_AUDIT=1`, `AUDIT_MODE=strict`, `FINANCIAL_AUDIT_MODE=strict`。
-- **Commands**: `screen/collect` (L0-L1) / `audit/dcf/report/black-account` / `qa` (L4)，均 `.json`+`.md` 双入口；`report` 为 18-agent 全闭环。
+- **Commands**: `screen/collect` (L0-L1) / `audit/dcf/report` (主链，排雷=T2 fraud-screener) / `black-account` (流水取证旁路=Primary black-account-checker) / `qa` (L4)，均 `.json`+`.md` 双入口；`report` 为 19-agent 全闭环（主链18 + 流水旁路1按需）。

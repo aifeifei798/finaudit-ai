@@ -1,6 +1,6 @@
 # FinAudit AI
 
-FinAudit AI is an AI-powered framework for high-precision financial auditing, fraud detection, and valuation modeling across **A-shares, Hong Kong, and US markets**. An 18-agent system automates the pipeline from raw filing extraction to professional, footnoted investment reports — with strict HITL gates and model tiering.
+FinAudit AI is an AI-powered framework for high-precision financial auditing, fraud detection, and valuation modeling across **A-shares, Hong Kong, and US markets**. A 19-agent system automates the pipeline from raw filing extraction to professional, footnoted investment reports — with strict HITL gates and model tiering.
 
 ## 🚀 Core Capabilities
 
@@ -8,7 +8,7 @@ FinAudit AI is an AI-powered framework for high-precision financial auditing, fr
 |---|---|
 | L0 Intake | **Orchestrator** (default, owns `pipeline-state.json`), **Ticker-Resolver** (cross-market code disambiguation), **Gate-Keeper** (sole HITL sign-off) |
 | L1 Evidence | **Filing-Collector** (CNINFO/HKEX/EDGAR routing), **Financial Researcher** (XBRL-first parsing), **Evidence-Locker** (sole `_bibliography.csv` writer) |
-| L2 Analysis | **Black Account Checker** (transaction forensics + M-Score/Z-Score/Sloan + governance red-flags), **Financial Analyst** (multi-doc reconciliation, Pre-Valuation initiator), **Industry-Peer Analyst** (peer benchmarking + macro + ESG screening), **Sentiment-Event Analyst** (event calendar, risk-only sidecar) |
+| L2 Analysis | **Fraud Screener** (M-Score/Z-Score/Sloan + governance red-flags, main-chain only), **Black Account Checker** (private transaction forensics, on-demand sidecar), **Financial Analyst** (multi-doc reconciliation, Pre-Valuation initiator), **Industry-Peer Analyst** (peer benchmarking + macro + ESG screening), **Sentiment-Event Analyst** (event calendar, risk-only sidecar) |
 | L3 Valuation | **Valuation Expert** (DCF/WACC pricing), **Scenario-Sensitivity Analyst** (Bull/Base/Bear + WACC×g matrix), **Portfolio Strategist** (sizing/concentration/stops) |
 | L4 Risk | **Adversarial Skeptic** (short-seller red team, owns Challenge Log), **Compliance Checker** (trilingual wording review, T3), **Judge-QA** (3-way number reconciliation, heterogeneous T3 model) |
 | L5 Output | **Report Writer** (footnoted compliant report), **Visualization-Excel** (living `.xlsx` + chart pack, render-only) |
@@ -39,7 +39,9 @@ Shared: `workspace/params/{cn,hk,us}.yaml` (market adapters), `workspace/peer_be
 
 ## ⌨️ Commands
 
-All commands have `.json` + `.md` dual entries: `screen` (L0–L1 intake) · `audit` (flash fraud screen) · `dcf` (pure valuation) · `black-account` (transaction forensics) · `report` (full 18-agent loop) · `qa` (L4 independent QA).
+All commands have `.json` + `.md` dual entries: `screen` (L0–L1 intake) · `audit` (flash fraud screen) · `dcf` (pure valuation) · `black-account` (transaction forensics) · `report` (full 19-agent loop) · `qa` (L4 independent QA).
+
+> v1.3.0 role split: `audit` → `fraud-screener` (listed-company M-Score/governance, main chain only, never touches private flows); `black-account` → `black-account-checker` (private CSV/Excel 6-step forensics, on-demand sidecar, never runs M-Score); `report` main chain uses `fraud-screener`, plus `black-account-checker` only when the user attaches private flows.
 
 ## 🛠️ Technical Stack
 

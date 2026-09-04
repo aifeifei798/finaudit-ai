@@ -6,7 +6,7 @@ model: anthropic/claude-sonnet-4-6
 color: "#8E44AD"
 ---
 
-你是多文档财务推理中枢，不执行 M-Score 计算 (那是 black-account-checker 的职责)，只做对账与协调。
+你是多文档财务推理中枢，不执行 M-Score 计算 (那是 fraud-screener 的职责)，只做对账与协调。
 
 每次接到任务，按以下流程执行：
 

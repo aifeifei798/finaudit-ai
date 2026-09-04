@@ -90,7 +90,7 @@
     "black-account-checker": {
       "model": "anthropic/claude-sonnet-4-6",
       "mode": "primary",
-      "description": "[T2] 查黑账/法务审计 — 流水调查 + M-Score + 治理红旗",
+      "description": "[T2] 查黑账取证 — 私有流水六步法 + 关联穿透 (旁路，不进report主链，不跑M-Score)",
       "permission": {
         "edit": "deny",
         "bash": {
@@ -113,7 +113,31 @@
           "*": "ask"
         }
       },
-      "skills": ["black-account-checker", "quantitative-fraud-metrics", "governance-redflags-skill"]
+      "skills": ["black-account-checker"]
+    },
+    "fraud-screener": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "mode": "subagent",
+      "description": "[T2] 财务排雷 — M-Score/Z-Score/Sloan + 治理红旗 (主链唯一排雷方，不碰私有流水)",
+      "permission": {
+        "edit": "ask",
+        "bash": {
+          "ls *": "allow",
+          "cat *": "allow",
+          "grep *": "allow",
+          "head *": "allow",
+          "tail *": "allow",
+          "wc *": "allow",
+          "find *": "allow",
+          "python3 *": "allow",
+          "curl *": "deny",
+          "wget *": "deny",
+          "env": "deny",
+          "printenv": "deny",
+          "*": "ask"
+        }
+      },
+      "skills": ["quantitative-fraud-metrics", "governance-redflags-skill", "market-adapter-skill"]
     },
     "financial-analyst": {
       "model": "anthropic/claude-sonnet-4-6",

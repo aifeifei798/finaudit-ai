@@ -4,7 +4,8 @@ agent: black-account-checker
 ---
 
 请加载 black-account-checker skill，按其调查六步法执行查黑账流程。用户输入：$ARGUMENTS
-输入优先 `workspace/targets/{TICKER}_{PERIOD}/raw/` (兼容 `workspace/raw/`)；金额先归一绝对值+ISO 币种；禁止网络外发账户明文。
+输入为用户提供的私有流水/尽调资料（CSV/Excel优先）；金额先归一绝对值+ISO 币种；禁止网络外发账户明文。
+注意：本命令只做流水取证，不跑上市公司M-Score/治理红旗；如需上市公司排雷请用 `audit`（fraud-screener）。
 
 ### 必查项
 - 数据清洗与字段标准化

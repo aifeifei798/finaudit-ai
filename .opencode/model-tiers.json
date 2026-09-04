@@ -16,7 +16,7 @@
     "T2": {
       "role": "Large Reasoner (70B+ / Sonnet级, temp 0.2-0.4)",
       "suggested_models": ["anthropic/claude-sonnet-4-6"],
-      "agents": ["orchestrator", "black-account-checker", "financial-analyst", "industry-peer-analyst", "valuation-expert", "scenario-sensitivity-analyst", "portfolio-strategist", "adversarial-skeptic", "gate-keeper", "report-writer"],
+      "agents": ["orchestrator", "black-account-checker", "fraud-screener", "financial-analyst", "industry-peer-analyst", "valuation-expert", "scenario-sensitivity-analyst", "portfolio-strategist", "adversarial-skeptic", "gate-keeper", "report-writer"],
       "rule": "跨文档推理/准则判断/估值权衡/红队辩论；禁止直读raw PDF全文"
     },
     "T3": {

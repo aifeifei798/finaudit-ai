@@ -73,7 +73,7 @@ Detects companies that report massive cash balances while simultaneously borrowi
 - **Step 1**: 从 `workspace/targets/{TICKER}_{PERIOD}/extracted/financial_statements/` 提取 8 变量 + Z-Score 输入 (BS/IS/CF)。
 - **Step 2**: 在 `workspace/targets/{TICKER}_{PERIOD}/models/` 下用 Python (numpy/pandas) 计算 M-Score / Z-Score / Sloan，脚本必须含 sanity bounds 校验。
 - **Step 3**: 检查 "High Cash, High Debt" paradox。
-- **Step 4**: 任一 tripwire 命中 → `black-account-checker` 提级至 🔴 并要求 "Cash Verification" 证据块 (银行函证/受限资金附注/利息收入匹配)。
+- **Step 4**: 任一 tripwire 命中 → `fraud-screener` 提级至 🔴 并要求 "Cash Verification" 证据块 (银行函证/受限资金附注/利息收入匹配)。
 - **Step 5**: 所有数值引用格式 `[Python Calc #ID: script_name.py]`，并在 `pipeline-state.json` 记录 `fraud_metrics: SUCCESS|N/A`。
 
 ## 6. Python 参考实现骨架
