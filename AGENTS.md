@@ -1,4 +1,4 @@
-# Agents Guide - FinAudit AI (v1.4.0 全栈)
+# Agents Guide - FinAudit AI (v1.5.0 全栈)
 
 ## Agents & Skills (19 agents, T1/T2/T3 分级；排雷归 fraud-screener，流水取证归 black-account-checker)
 | 层 | Agent | Skills | Tier |
@@ -34,9 +34,16 @@
 4. **工程治理**：`run_mode` 双模式（institutional 阻塞签收 / batch-autonomous 评分放行+Warning）；Challenge Log max 2 轮熔断转 Unresolved 披露 + 反馈路由表；evidence inbox 队列 + 文件锁 + 原子提交；门禁决议写 `webhook_payload.json` 异步推送。
 5. **PIT/FX**：`restatement_policy`（实时 as-restated / 回测 as-reported + vintage）；跨币种铁律（Rf 跟经营币种 + CRP + discount_currency 披露）。
 
-## Workspace (Canonical v1.4.0)
+## v1.5.0 演进（第二阶深水区补丁）
+1. **Haircut联动**：`params/risk_penalty_matrix.yaml`——Unresolved 按档惩罚（核心会计 g-50bps/WACC+100bps/仓位≤2%，治理 g-30bps/WACC+50bps/≤3%，其余 ≤5%），judge-qa 四者一致性校验。
+2. **PII加盐映射**：`sanitize.py` 每任务随机 Salt + HMAC（`--vault-in` 跨期复用不断链），vault 0600，报告前渲染合规代号后 `--destroy-vault`。
+3. **SOTP调度**：ticker-resolver 输出 `is_conglomerate/segments[]`，Dispatcher 拆 2–3 分部独立挂引擎（EV/NBV、PB-ROE、PS、NAV、FFO），models/ 加总 + 控股折价。
+4. **附注追溯**：Cross-Reference Resolver（参见附注X→Expansion Fetching，最多 2 跳，悬空记 Gap）。
+5. **FX时点铁律**：经营本币折现 → T=0 即期单点转上市币种（`FX: <pair> <rate> @T=0`），禁逐年主观汇率预测。
+
+## Workspace (Canonical v1.5.0)
 - `workspace/targets/{TICKER}_{PERIOD}/`: 独立沙盒 (唯一写入目标)。
-  - `raw/`、`extracted/` (领域分块 + `footnotes_focus/` + `_footnote_index.csv` + `evidence_inbox/` + `_bibliography.csv` + `_reconciliation_log.csv` + `_assumptions.csv` + `_peers.csv` + `fx_rates.csv` + `macro_brief.md` + `_events.csv` + `_esg_flags.csv`)、`models/` (`run_log.jsonl` + `MODEL_MAP.md` + `.xlsx` + `charts/` + `position_table.csv`)、`pipeline-state.json` (含 run_mode/restatement_policy/discount_currency/valuation_engine/skeptic round/unresolved/webhook)。
+  - `raw/`、`extracted/` (领域分块 + `footnotes_focus/` + `_footnote_index.csv` + `evidence_inbox/` + `_bibliography.csv` + `_reconciliation_log.csv` + `_assumptions.csv` + `_peers.csv` + `fx_rates.csv` + `macro_brief.md` + `_events.csv` + `_esg_flags.csv`)、`models/` (`run_log.jsonl` + `MODEL_MAP.md` + `.xlsx` + `charts/` + `position_table.csv`)、`pipeline-state.json` (含 run_mode/restatement_policy/discount_currency/valuation_engine/segments/skeptic round/unresolved/risk_penalty/webhook)。
 - `workspace/targets/_TEMPLATE/`：脚手架；`workspace/params/{cn,hk,us}.yaml` (rf_anchor/erp/crp/discount规则) + `valuation_routing.yaml`；`workspace/peer_benchmarks/`：peer 库 + `sw_hs_gics_mapping.csv`；`workspace/reports/`：终稿；`workspace/reviews/`：双签收 + `webhook_payload.json`。
 - Legacy 扁平 `workspace/raw|extracted|models/`：只读兼容。
 

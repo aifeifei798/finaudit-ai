@@ -1,8 +1,14 @@
-# valuation_routing.yaml — 估值引擎路由表 v1.4.0
-# ticker-resolver 输出 {gics11, sw31/hs11} + profitability 后，由 valuation-expert 按本表选引擎。
+# valuation_routing.yaml — 估值引擎路由表 v1.5.0
+# ticker-resolver 输出 {gics11, sw31/hs11, is_conglomerate, segments[]} + profitability 后，由 valuation-expert 按本表选引擎。
 # 严禁对金融/REITs/未盈利管线资产强算标准 FCFF-DCF；命中 bypass 即 ValueError 转路由。
-version: "1.4.0"
+version: "1.5.0"
 default_engine: dcf_fcff
+conglomerate_probe:
+  flag_if: "主业≥2个且次主业营收占比≥20%，或 segment_notes ≥2 个可拆分部"
+  max_segments: 3
+  method: "每分部独立挂引擎（见 sotp_engines），models/ 出 SOTP 加总活表 + 控股折价披露"
+  examples: "平安：寿险EV/NBV + 银行PB-ROE + 科技PS；腾讯/阿里：主业DCF/PE + 联营投资NAV + 云PS；房企：开发NAV/PE + 持有物业FFO/CapRate"
+sotp_engines: [dcf_fcff, pb_roe, ddm, ev_nbv, ffo_multiple, nav_cap_rate, ev_sales, rnpv_pipeline]
 routes:
   - match: {sector: [Financials, Banks, Diversified_Financials, Insurance]}
     engine: financials_bypass

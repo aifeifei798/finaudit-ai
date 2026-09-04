@@ -1,0 +1,22 @@
+# risk_penalty_matrix.yaml — Unresolved→估值/仓位强制联动 v1.5.0
+# 目标：杜绝“文字喊风险、量化给重仓”的认知失调。任一 Unresolved 存在即触发，不可跳过。
+version: "1.5.0"
+trigger: "len(unresolved_discrepancies) > 0"
+tiers:
+  core_accounting:
+    match: [revenue_authenticity, receivables_provision, cash_restriction, guarantee_off_bs, vie_consolidation]
+    valuation_haircut: {g_bps: -50, wacc_bps: +100}
+    position_cap: 0.02
+    action: "目标价按惩罚后参数重算；仓位硬顶2%，或降级为观察仓（0%)；终稿红旗章节与目标价同页互链。"
+  major_governance:
+    match: [auditor_resignation, pledge_critical, rpt_tunnel, key_man_regulatory]
+    valuation_haircut: {g_bps: -30, wacc_bps: +50}
+    position_cap: 0.03
+    action: "估值惩罚后重算；仓位硬顶3%。"
+  generic_high:
+    match: [other_high]
+    valuation_haircut: {g_bps: -20, wacc_bps: +50}
+    position_cap: 0.05
+    action: "仓位硬顶5%，终稿披露。"
+stacking: "多项并存取最严一档，不叠加；全部解决后方可移除惩罚并留痕。"
+enforcement: "valuation-expert 必须读取 unresolved 列表先算惩罚参数再定价；portfolio-strategist 先读惩罚后目标价再定仓位；judge-qa 校验三者一致，不一致阻断 FINAL。"

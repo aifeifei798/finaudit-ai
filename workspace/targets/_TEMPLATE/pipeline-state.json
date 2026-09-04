@@ -1,5 +1,5 @@
 {
-  "version": "1.4.0",
+  "version": "1.5.0",
   "target": "TICKER_PERIOD",
   "market": "cn|hk|us",
   "run_mode": "institutional|batch-autonomous",
@@ -36,6 +36,12 @@
       "at": ""
     },
     "unresolved_discrepancies": [],
+    "risk_penalty": {
+      "tier": "",
+      "g_bps": 0,
+      "wacc_bps": 0,
+      "position_cap": null
+    },
     "compliance": "PENDING",
     "judge": "PENDING",
     "webhook": "NOT_REQUIRED",

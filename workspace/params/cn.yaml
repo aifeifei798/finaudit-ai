@@ -7,6 +7,7 @@ rf_anchor: CN_10Y
 erp_source: Damodaran_CN
 crp_default: 0.005
 discount_currency_rule: operating
+fx_conversion_timing: T0_spot_single_point
 restatement_policy_default: as-restated
 fy_default_end: "12-31"
 peer_industry_map: sw31

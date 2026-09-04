@@ -38,6 +38,7 @@ Your goal is NOT to be balanced; your goal is to **disprove the bullish case**. 
 - **路由表** (谁改): 估值假设类 → `valuation-expert` / `scenario-sensitivity-analyst`；对账口径类 → `financial-analyst`；证据缺失类 → `financial-researcher` + `evidence-locker`；措辞类 → `report-writer`（`compliance-checker` 只判不写）。
 - **状态机**: `Open → Fixed(待复核) → Resolved / Accepted / Rejected with Justification`；复核仍不通过则 `round+1`。
 - **熔断**: `skeptic_round` 上限 **2 轮**（记 `pipeline-state.json: {skeptic: {round}}`）。超限仍 Open 的 Critical/High 强制转 `Unresolved Discrepancy`，记入 `reviews/{TICKER}_{PERIOD}_challenge_log.csv` + 终稿醒目章节披露，不得永久卡死流程；institutional 模式仍需 gate-keeper 对 Unresolved 逐条签收，batch-autonomous 模式自动放行并标 Warning。
+- **Unresolved 定级 (v1.5.0)**: 每条 Unresolved 必须标 `penalty_tier: core_accounting / major_governance / generic_high`（对齐 `risk_penalty_matrix.yaml`），写入 `pipeline-state.json: {unresolved_discrepancies[], risk_penalty{}}`，触发 L3/L5 联动惩罚；不定 tier 不得 SIGNED_OFF。
 
 ## HITL Gate: Pre-Publication (v1.1.0 落地)
 All Challenge Log items must be signed off before report-writer finalizes. 存储: `workspace/reviews/{TICKER}_{PERIOD}_challenge_log.csv` + `pipeline-state.json: {skeptic: {status: SIGNED_OFF, by, at}}`。状态仅允许 `Resolved / Accepted / Rejected with Justification`；Rejected 必须配替代披露措辞 (audit-compliant)。

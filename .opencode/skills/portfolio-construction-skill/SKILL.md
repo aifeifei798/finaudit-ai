@@ -5,7 +5,7 @@ license: MIT
 compatibility: opencode
 metadata:
   author: "金融安全审计组"
-  version: "1.1.0"
+  version: "1.5.0"
 ---
 
 # Portfolio Construction Skill
@@ -19,3 +19,7 @@ metadata:
 
 ## 红线
 禁止无 Bull/Bear 区间给仓位；禁止杠杆建议；止损必须同时给价格与基本面证伪条件。
+
+## Unresolved 仓位硬顶 (v1.5.0 新增，防“红旗+重仓”分裂)
+- 先读 `pipeline-state.json: {unresolved_discrepancies}` + `risk_penalty_matrix.yaml`，再定仓位；输入目标价必须已是惩罚后价格，否则退回 L3。
+- 硬顶：核心会计争议 ≤2%（或观察仓 0%）；重大治理 ≤3%；其余 High ≤5%；多项取最严。终稿仓位表须与红旗章节同页互链并披露惩罚档。

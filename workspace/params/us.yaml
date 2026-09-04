@@ -8,6 +8,7 @@ erp_source: Damodaran_US
 crp_default: 0.0
 adr_crp_rule: operating_country_crp_mandatory
 discount_currency_rule: operating_then_spot_to_listing
+fx_conversion_timing: T0_spot_single_point
 restatement_policy_default: as-restated
 fy_default_end: mixed_52_53_week
 peer_industry_map: gics11

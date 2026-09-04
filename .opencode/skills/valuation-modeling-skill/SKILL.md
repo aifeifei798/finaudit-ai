@@ -39,7 +39,7 @@ This skill provides the framework for building and auditing financial models, en
 ## WACC 推导 (v1.1.0 新增，防拍脑袋)
 - `WACC = Ke*E/(D+E) + Kd*(1-T)*D/(D+E)`；`Ke = Rf + β*ERP (+size/country alpha, 单列披露)`。
 - Rf 用 10Y 国债 (备注日期)，β 用 2–5Y 周频回归或 Barra/同业 median (注明源)，ERP 4%–6% 默认并做 ±1pp 敏感性。Kd 用实际加权票息或 YTM，不得直接套 Rf+200bp 了事。
-- 跨币种（H股/ADR）必须先按 `market-adapter-skill` 跨币种铁律定 `discount_currency + CRP` 再算 Ke/WACC，否则 `ValueError`。
+- 跨币种（H股/ADR）必须先按 `market-adapter-skill` 跨币种铁律定 `discount_currency + CRP` 再算 Ke/WACC，终值一律 T=0 即期单点转换（`FX: <pair> <rate> @T=0`），否则 `ValueError`。
 
 ## Valuation Dispatcher (v1.4.0 新增，防“一刀切”DCF)
 - **输入**: ticker-resolver 输出 `{gics11, sw31/hs11, profitable_flag, business_model}` + `workspace/params/valuation_routing.yaml@v1.4.0`。
@@ -54,6 +54,15 @@ This skill provides the framework for building and auditing financial models, en
 ## SBC 与租赁调整 (v1.4.0 新增，防隐形现金流失真)
 - **SBC**: 美股科技必查。双列披露 `FCF_reported` vs `FCF_adj = FCF_reported - SBC`（另计 SBC 相关现金税影响）；若 `SBC/FCF > 20%` 标 High；摊薄股数必须给 trajectory，EPS/DDM 用稀释后股数。
 - **租赁 (IFRS 16 / ASC 842)**: 双列 `EBITDA_pre/post_lease`；EV 必须把租赁负债计入 Debt；FCF 附桥接表说明经营/筹资重分类影响。未做桥接不得进 base case。
+
+## Confidence Haircut 联动 (v1.5.0 新增，Unresolved 强制惩罚估值)
+- **输入**: `pipeline-state.json: {unresolved_discrepancies}` + `workspace/params/risk_penalty_matrix.yaml@v1.5.0`。
+- **规则**: 存在 Unresolved 即先算惩罚参数再定价——核心会计争议档 `g -50bps、WACC +100bps`；重大治理档 `g -30bps、WACC +50bps`；其余 High 档 `g -20bps、WACC +50bps`；多项并存取最严一档不叠加。
+- **硬约束**: 目标价必须基于惩罚后参数重算并双列披露（惩罚前/后）；未读 unresolved 列表直接定价即判错，judge-qa 交叉不一致阻断 FINAL。
+
+## SOTP 分部加总 (v1.5.0 新增，集团型企业禁单引擎)
+- **探针**: ticker-resolver 给 `is_conglomerate=true`（多主业、次主业≥20%或附注可拆≥2分部）即拆 2–3 个分部，每分部独立挂引擎（寿险EV/NBV、银行PB-ROE、科技PS、联营投资NAV、开发NAV、持有物业FFO/CapRate），`models/` 出 SOTP 加总活表 + 控股折价（conglomerate discount）披露。
+- 单引擎硬套平安/腾讯/阿里类集团即判错，judge-qa 阻断。
 
 ## Modeling Principles
 1. **Hardcode Minimization**: All inputs in "Assumptions" section.

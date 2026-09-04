@@ -42,6 +42,11 @@ Split into `workspace/targets/{TICKER}_{PERIOD}/extracted/`:
 - **流程**: T1 粗筛全附注打 `risk_score (0-3)` → score≥2 的章节保留**原文聚焦窗口** (verbatim excerpt，单窗 ≤4k tokens，保留 `source_file:page:note_id` 锚点) 供 T2 fraud-screener / L4 做定性推理；score≤1 只存摘要 + 页码指针。
 - **Selective Long-Context Bypass**: T2/L4 只读 `footnotes_focus/` 原文窗口，仍禁读 raw PDF 全文——既控 token，又不漏附注猫腻。未建聚焦窗口不得声称“已扫附注”，写 `Not screened, confidence: Low`。
 
+## Cross-Reference Resolver (v1.5.0 新增，防跨注孤岛)
+- **触发正则** (中英): `详见附注.{0,8}?[十一二三四五六七八九十\d\(\)（）五、,\. \-Notes]+` / `(see|refer to|Note)\s*\d+[\.\(\d\)]*` / `附注十一（五）类` 精确锚点。
+- **Expansion Fetching**: 任一聚焦窗口命中引用即自动连带抽取目标附注原文并入同一窗口包（`expansion_from: [note_ids]` 记入 `_footnote_index.csv`）；最多展开 2 跳，防无限递归；目标缺失记 `Dangling ref → Gap`。
+- 担保明细藏关联方大表脚注、或有事项一句话挂受限资产等“捉迷藏”写法，必须靠本机制还原主干上下文，孤岛片段禁作定性结论唯一依据。
+
 ## Extraction Standards
 1. **Table Integrity**: 优先 XBRL tags (SEC) / 巨潮结构化财报；PDF 表格用 camelot/tabula 类工具并人工抽查 5 行；禁止用纯文本流推断表格。
 2. **Footnote Mapping**: Every number must be checked for footnotes; footnotes extracted and linked (`value_id -> note_id`)。

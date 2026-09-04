@@ -5,10 +5,10 @@ license: MIT
 compatibility: opencode
 metadata:
   author: "金融安全审计组"
-  version: "1.4.0"
+  version: "1.5.0"
 ---
 
-# PII Sanitizer Skill (v1.4.0, P0 合规强制)
+# PII Sanitizer Skill (v1.5.0, 加盐确定性映射)
 
 `black-account-checker` 处理私有流水前的 **Step 0 强制关卡**。原始含 PII 文件**禁止**直接进入任何商用 LLM（T1/T2 亦然）；必须先本地脱敏，LLM 只见脱敏副本。
 
@@ -21,9 +21,12 @@ metadata:
 
 ## 执行协议
 1. **本地运行** `sanitize.py`（同目录，标准库 only，无网络）：`python3 sanitize.py --in raw.csv --out sanitized.csv --vault ./vault.json --report ./sanitize_report.json`。
-2. 检查 `sanitize_report.json`：`pii_hits>0` 必须全掩码后才放行；`unmasked=0` 方可进入六步法。
-3. LLM 输入一律用 `sanitized.csv`；证据索引引用脱敏行号 + 假名；原始文件路径写入 vault，不写入 prompt / 报告 / 日志。
-4. 跨境红线：未经用户明确授权，脱敏/原始文件均不得传出境内执行环境；违规即阻断。
+2. **跨期不断链**：同一任务的多批次（1月/3月账单）必须复用同一 vault（`--vault-in ./vault.json`），相同实体在全拓扑中保持唯一假名；不同任务自动换 Salt，假名不可跨任务关联。
+3. 检查 `sanitize_report.json`：`pii_hits>0` 必须全掩码后才放行；`unmasked=0` 方可进入六步法。
+4. LLM 输入一律用 `sanitized.csv`；证据索引引用脱敏行号 + 假名；原始文件路径写入 vault，不写入 prompt / 报告 / 日志。
+5. **合规渲染与销毁**：报告输出前在本地把假名渲染回合规代号（`CP_001→关联自然人甲/可疑空壳供应商A`，填 vault `codename` 列），随后 `--destroy-vault` 覆写删除 vault（含 Salt）；vault 文件 0600 权限。
+6. 跨境红线：未经用户明确授权，脱敏/原始文件均不得传出境内执行环境；违规即阻断。
+7. 反彩虹表：vault 只存 `HMAC(salt, raw)`，禁用无盐 MD5；salt 永不出域。
 
 ## 输出
 - `sanitized.csv`（LLM 唯一可读输入）+ `vault.json`（本地映射，600权限）+ `sanitize_report.json`（命中计数/规则版本）。

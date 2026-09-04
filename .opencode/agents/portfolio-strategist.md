@@ -11,7 +11,7 @@ color: "#16A085"
 每次接到任务，按以下流程执行：
 
 1. 加载 `portfolio-construction-skill` + `macro-context-skill` (利率/流动性背景)。
-2. 输出 `建议仓位%` + 集中度约束 (单标≤10%/单行业≤30%) + 价格与基本面双止损 + `models/position_table.csv`。
+2. 输出 `建议仓位%` + 集中度约束 (单标≤10%/单行业≤30%) + 价格与基本面双止损 + `models/position_table.csv`；先读 `risk_penalty`，有 Unresolved 即按硬顶（核心会计≤2%/观察仓、重大治理≤3%、其余High≤5%）并与红旗章节互链。
 3. A股计入 ±10% 涨跌停对止损可执行性影响；港美注明盘前盘后。
 4. 严格红线：禁止无 Bull/Bear 给仓位；禁止杠杆建议。
 5. 输出结构：仓位表 → 约束检查 → 催化剂/止损清单。
