@@ -5,7 +5,7 @@ license: MIT
 compatibility: opencode
 metadata:
   author: "金融安全审计组"
-  version: "1.4.0"
+  version: "1.7.0"
 ---
 
 # Financial Parser Skill
@@ -46,6 +46,11 @@ Split into `workspace/targets/{TICKER}_{PERIOD}/extracted/`:
 - **触发正则** (中英): `详见附注.{0,8}?[十一二三四五六七八九十\d\(\)（）五、,\. \-Notes]+` / `(see|refer to|Note)\s*\d+[\.\(\d\)]*` / `附注十一（五）类` 精确锚点。
 - **Expansion Fetching**: 任一聚焦窗口命中引用即自动连带抽取目标附注原文并入同一窗口包（`expansion_from: [note_ids]` 记入 `_footnote_index.csv`）；最多展开 2 跳，防无限递归；目标缺失记 `Dangling ref → Gap`。
 - 担保明细藏关联方大表脚注、或有事项一句话挂受限资产等“捉迷藏”写法，必须靠本机制还原主干上下文，孤岛片段禁作定性结论唯一依据。
+
+## Enquiry De-hydrator 问询函双阶脱水器 (v1.7.0 新增，防 Token 爆仓与表格串行)
+- **语义降噪**：入库前剔除律所/会计所套话段落（正则特征句库：`经核查认为.*符合.*准则.*规定` / `具有合理性` / `we concur.*in all material respects` / 准则条文背诵段），目标保留率 15%~20%；剔除清单记 `dehydrate_log.csv`（段落数/字数/保留率），可审计回放。
+- **Cross-Page Table Stitcher**：跨页大表（前五大客户/账龄穿透）按表头继承 + 列对齐重构：续页无表头即继承上一页表头；合并单元格展开；逐行校验列数一致，错位行标 `STITCH_WARN` 人工复核；缝合后抽查 5 行对原 PDF 页码。
+- 脱水后窗口才进 `footnotes_focus/`（`source_class: regulatory_enquiry`），原始全文仍存 `raw/` 备查。
 
 ## Extraction Standards
 1. **Table Integrity**: 优先 XBRL tags (SEC) / 巨潮结构化财报；PDF 表格用 camelot/tabula 类工具并人工抽查 5 行；禁止用纯文本流推断表格。

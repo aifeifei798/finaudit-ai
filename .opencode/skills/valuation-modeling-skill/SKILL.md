@@ -69,6 +69,11 @@ This skill provides the framework for building and auditing financial models, en
 - **切换**: 强制清算价值法（Liquidation / Net-Net）或 EV/Sales 中枢；E 权重改用市值（无市值用账面 floor 0 + 披露），禁用负账面 E 进 WACC 权重。
 - **Clamp**: Sensitivity 矩阵先验 `(WACC − g) ≥ 1.5%`，违例格记 `N/A (clamped)` 不渲染；visualization 空值不断图表管线。
 
+## Capital-Structure & ADR Normalizer (v1.7.0 新增，防 8 倍目标价事故)
+- **输入**: ticker-resolver 的 `{adr_ratio, dual_class_weights, total_common_shares}`，快照入 `_assumptions.csv`。
+- **硬化公式**: `Target(ADR) = (EV − NetDebt) / TotalCommonShares × ADR_Ratio × SpotFX(T=0)`；港股/ADR 双重上市必须显式打印换算链（普通股总数→每普通股价值→×比率→×汇率）；禁止拿普通股总数直接除出 ADR 目标价，judge-qa 逐项核对比率链，断裂即 fail。
+- 双重股权：分红/转股差异进 DDM/稀释股数，投票权差异只进治理折价、不进每股价值。
+
 ## Modeling Principles
 1. **Hardcode Minimization**: All inputs in "Assumptions" section.
 2. **Formula Transparency**: Traceable formulas; no deep nested IF; helper rows.

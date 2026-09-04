@@ -68,7 +68,14 @@ Detects companies that report massive cash balances while simultaneously borrowi
 - **Interest Coverage Gap**: (Interest Expense / Average Cash) > 0.05
 - **Cash Flow Divergence**: (Net Income - Operating Cash Flow) / Total Assets > 0.10 for 3 consecutive years
 
-## 5. Execution Protocol
+## 5. Triangular Discrepancy Auditor 三角勾稽矩阵 (v1.7.0 新增，穿透表外保理/托盘)
+- 流水干净≠干净：表外走单（虚构销售→空壳→无追索保理→银行承兑回款）表内现金流完美，必须用财报三表反向钳制：
+  1. **大存大贷探针**（§4 paradox，命中即深查资金真实用途）；
+  2. **预付/资本开支异象**：预付账款增速连续2年超营收增速 20pp+，或预付/总资产同业分位 > P90 → 隐蔽资金通道嫌疑，强制穿透对手方（是否空壳/关联/新设）；
+  3. **流量-规模背离**：回款/营收、同业现金周转偏离超 30% 且无业务解释 → 即便流水为正规银行电汇亦强制标红 + 问询函交叉验证。
+- 任一命中即提级 🔴 并要求“穿透证据块”（保理合同有无追索/预付对手方工商/信用证受限），不得因流水漂亮放行。
+
+## 6. Execution Protocol
 
 - **Step 1**: 从 `workspace/targets/{TICKER}_{PERIOD}/extracted/financial_statements/` 提取 8 变量 + Z-Score 输入 (BS/IS/CF)。
 - **Step 2**: 在 `workspace/targets/{TICKER}_{PERIOD}/models/` 下用 Python (numpy/pandas) 计算 M-Score / Z-Score / Sloan，脚本必须含 sanity bounds 校验。
@@ -77,7 +84,7 @@ Detects companies that report massive cash balances while simultaneously borrowi
 - **Step 4b (定性附注联动, v1.4.0)**: 同步读 `extracted/_footnote_index.csv` + `footnotes_focus/` 原文窗口（担保/表外VIE/受限资金/保理追索/诉讼/关联拆借）；定量灰区以上必须配 ≥1 附注原文佐证或明确 `Gap: footnotes_focus missing`，禁止纯数字下🔴定论。
 - **Step 5**: 所有数值引用格式 `[Python Calc #ID: script_name.py]`，并在 `pipeline-state.json` 记录 `fraud_metrics: SUCCESS|N/A`。
 
-## 6. Python 参考实现骨架
+## 7. Python 参考实现骨架
 
 ```python
 # models/fraud_mscore.py — 允许库: numpy, pandas, math, pathlib, json

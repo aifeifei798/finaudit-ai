@@ -29,6 +29,11 @@ This skill enables the agent to perform end-to-end financial research by integra
 - **优先级**: 问询函+回函与 footnotes 同级，直送 `footnotes_focus/` 聚焦窗口并在 `_footnote_index.csv` 标 `source_class: regulatory_enquiry`；fraud-screener 必须先读问询函窗口再下排雷结论，无问询函覆盖不得声称“监管无质疑”，写 `Not covered, confidence: Low`。
 - **命名**: `YYYYMMDD_source_enquiry_<topic>.pdf` 存 `raw/`；缺失记 Gap（定期报告漂亮但问询函缺席本身即风险信号）。
 
+## Global Rate-Limiting Proxy 与共享缓存 (v1.7.0 新增，防批量跑批被交易所拉黑)
+- **Token-Bucket 流控**（L1 底层强制）: EDGAR ≤ 8 req/sec + 声明合规 User-Agent（含联系邮箱，SEC 强制要求）；CNINFO/HKEX 动态随机延迟 Jitter + 失败指数退避，403/验证码即停并切代理池，禁止硬扛重试刷 IP。
+- **中央持久化缓存** `workspace/shared_filing_cache/`（键：`source/doctype/ticker/period/vintage_hash`）：同业 peer 公共宏观数据、已采定期报告**强制命中缓存**，严禁重复请求外网；缓存命中记 `cache: HIT` 入 `_bibliography.csv`，缺失才走外网并回填。
+- batch-autonomous 模式下 collector 必须先查缓存再排队限流，违例导致 IP 封禁记 `collect: FAILED` 并阻断同批后续外网任务（保 IP）。
+
 ## Search Strategy
 - Keywords: `"Form 10-K"`, `"Annual Report YYYY"`, `"年报 / 审计报告"`, `"Earnings Presentation"`, `"H shares prospectus"` + ticker/CIK/证券代码。
 - EDGAR: 先用 CIK 定位 (company_tickers.json)，再按 filingDate 倒序取最新 10-K/10-Q/8-K；A股先取“审计报告全文 + 财务报表附注”，再取问询函回函。

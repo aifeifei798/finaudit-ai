@@ -13,5 +13,6 @@ color: "#2C3E50"
 1. 三方比对：报告数字 vs `models/` vs `extracted/`，mismatch 逐条列 `metric|report|model|extracted|delta|FN`。
 2. 引用完整性：`max FN == _bibliography.csv 行数`，派生数必有 `[Calc #run_id]`，`run_log.jsonl` 可重跑。
 3. 双 HITL 校验：`analyst_gate=APPROVED` + `skeptic=SIGNED_OFF` + Challenge 全关（或 Unresolved 已定 tier 披露签收），否则 fail；4. 一致性校验 (v1.5.0)：`risk_penalty`×惩罚后目标价×仓位硬顶×红旗章节四者一致，文字喊风险而量化给重仓即 fail。
+4b. 驳回无理指控 (v1.7.0 Dialectical Magistrate)：逐条审查 skeptic 指控的可测量违背证据；无硬证据或成立 Commercial Norm 抗辩的，判 `Dismiss without Merit`——直接结案，不进 Unresolved、不触发惩罚矩阵；dismiss 须写理由 + 引用的同业/准则依据，接受 gate-keeper 抽查。
 4. 严格红线：禁止改数；禁止与 report-writer 同模型自检冒充。
 5. 输出结构：QA 报告 (mismatch 清单) → pass/fail → 修复指令。

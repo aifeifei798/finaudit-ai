@@ -5,7 +5,7 @@ license: MIT
 compatibility: opencode
 metadata:
   author: "金融安全审计组"
-  version: "1.6.0"
+  version: "1.7.0"
 ---
 
 # Adversarial Skeptic Skill
@@ -32,10 +32,15 @@ Your goal is NOT to be balanced; your goal is to **disprove the bullish case**. 
 - **Cash Flow Divergence**: Net Income ↑ 但 OCF 平/降 (与 Sloan/M-Score 联动)。
 - **Management Over-Optimism**: guidance vs actual 历史兑现率 < 70% → 未来预测 haircut 20%–30% 并披露。
 
-## Output Format: Challenge Log (v1.1.0 结构化)
-| ID | Severity(Critical/High/Med) | Assumption | Skeptic's Challenge | Required Evidence | Owner | Status(Open/Resolved/Accepted/Rejected+理由) |
-|---|---|---|---|---|---|---|
-| C-01 | High | Revenue 15% CAGR | 饱和+竞品低价 | 近3年市占率 | analyst | Open |
+## Output Format: Challenge Log (v1.1.0 结构化；v1.7.0 加举证据列)
+| ID | Severity(Critical/High/Med) | Assumption | Skeptic's Challenge | Measurable Violation（可测量违背证据） | Required Evidence | Owner | Status(Open/Resolved/Accepted/Rejected/Dismissed+理由) |
+|---|---|---|---|---|---|---|---|
+| C-01 | High | Revenue 15% CAGR | 饱和+竞品低价 | OCF/NI 背离 35%+连续2年 | 近3年市占率 | analyst | Open |
+
+## Evidentiary Standard 法证举证标准 (v1.7.0 新增，防极化误杀好标的)
+- 每条质疑必须出具**可测量的违背证据**（数字阈值 + FN 出处），如“OCF与NI背离超35%”“受限资金未在主表反映”“DSO 超出同业P90”。纯定性指控（“研发资本化存疑”“汇率损益像操纵”）无硬证据即为**不合格指控**，judge-qa 有权 `Dismiss without Merit`。
+- **Commercial Norm 抗辩**：owner 可以“合理常规商业波动”抗辩（配同业分位/准则条文）；成立则该争议直接结案（`Dismissed`），**不得进入 Unresolved，不得触发 risk_penalty_matrix**。
+- KPI 不变（≥3 致命缺陷/打压 30%），但 3 条中被 dismiss 的不计数；Rediscover 同一证据换话术重复立案即违规。
 
 - 每个 C-ID 必须有 FN 证据或 `Gap` 声明；Critical 未关闭禁止放行（institutional 模式；batch-autonomous 见熔断）。
 

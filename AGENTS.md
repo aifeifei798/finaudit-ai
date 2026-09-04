@@ -1,4 +1,4 @@
-# Agents Guide - FinAudit AI (v1.6.0 全栈)
+# Agents Guide - FinAudit AI (v1.7.0 全栈)
 
 ## Agents & Skills (19 agents, T1/T2/T3 分级；排雷归 fraud-screener，流水取证归 black-account-checker)
 | 层 | Agent | Skills | Tier |
@@ -48,7 +48,14 @@
 4. **困境兜底**：`distressed_fallback`（BV<0/连亏/债无价→清算/Net-Net/EV-Sales，禁 DCF/PB-ROE）+ `(WACC−g)≥1.5%` Clamp。
 5. **红队极化**：空头 CIO 角色 + KPI（≥3 致命缺陷/打压 30%），无反证的认可判 sycophancy 打回。
 
-## Workspace (Canonical v1.6.0)
+## v1.7.0 演进（第四阶工业化硬化）
+1. **合议审判**：skeptic 指控须持可测量违背证据；judge-qa 可 `Dismiss without Merit`（结案、不进 Unresolved、不触发惩罚矩阵），防极化误杀好标的致系统性空仓。
+2. **问询函脱水**：Enquiry De-hydrator（剔律所套话保留 15%~20% + `dehydrate_log.csv`）+ Cross-Page Table Stitcher（表头继承/列对齐/`STITCH_WARN`）。
+3. **ADR归一化**：ticker-resolver 输出 `adr_ratio/dual_class_weights`；`Target(ADR)=(EV−NetDebt)/Shares×Ratio×FX@T=0`，比率链断裂 judge-qa fail。
+4. **三角勾稽**：流水-三表矩阵（大存大贷/预付异象/流量-规模背离），流水漂亮亦可推翻标红。
+5. **流控缓存**：Token-Bucket（EDGAR≤8 req/s+合规UA，CNINFO/HKEX jitter+退避）+ `shared_filing_cache/` 强制命中，403 即停保 IP。
+
+## Workspace (Canonical v1.7.0)
 - `workspace/targets/{TICKER}_{PERIOD}/`: 独立沙盒 (唯一写入目标)。
   - `raw/`、`extracted/` (领域分块 + `footnotes_focus/` + `_footnote_index.csv` + `evidence_inbox/` + `_bibliography.csv` + `_reconciliation_log.csv` + `_assumptions.csv` + `_peers.csv` + `fx_rates.csv` + `macro_brief.md` + `_events.csv` + `_esg_flags.csv`)、`models/` (`run_log.jsonl` + `MODEL_MAP.md` + `.xlsx` + `charts/` + `position_table.csv`)、`pipeline-state.json` (含 run_mode/restatement_policy/discount_currency/valuation_engine/segments/skeptic round/unresolved/risk_penalty/webhook)。
 - `workspace/targets/_TEMPLATE/`：脚手架；`workspace/params/{cn,hk,us}.yaml` (rf_anchor/erp/crp/discount规则) + `valuation_routing.yaml`；`workspace/peer_benchmarks/`：peer 库 + `sw_hs_gics_mapping.csv`；`workspace/reports/`：终稿；`workspace/reviews/`：双签收 + `webhook_payload.json`。
