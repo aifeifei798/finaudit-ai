@@ -5,7 +5,7 @@ license: MIT
 compatibility: opencode
 metadata:
   author: "金融安全审计组"
-  version: "1.1.0"
+  version: "1.4.0"
 ---
 
 # Peer Comparison Skill
@@ -21,6 +21,7 @@ This skill provides the methodology for relative valuation and benchmarking agai
 
 ## Benchmarking Metrics
 - **Valuation Multiples**: P/E, EV/EBITDA, P/S, P/BV (负值记 N/A 不入中位)。
+- **金融/REITs专用 (v1.4.0)**: P/B-ROE 回归、股息率 (DDM 输入)、FFO/AFFO 倍数、NAV 折溢价；银行禁拿 EV/EBITDA硬套。
 - **Operational Ratios**: Revenue Growth, Gross Margin, ROE, ROIC, Debt/Equity.
 - **Efficiency Ratios**: Asset Turnover, Inventory Turnover, DSO.
 - 一律用 median + P25/P75 区间，禁止只报 mean；每个 multiple 注明 `N (post-IQR)`。
@@ -28,7 +29,7 @@ This skill provides the methodology for relative valuation and benchmarking agai
 ## Analysis Workflow
 - **Relative Positioning**: Growth vs Multiple 散点 (数据表随附，不只贴图)。
 - **Premium/Discount Justification**: 溢价必须点名驱动 (growth/margin/ROIC/市占)，折价必须点名风险 (leverage/governance/liquidity)，各配 FN。
-- **Implied Valuation**: `Implied EV = peer_median_EV/EBITDA * target_EBITDA` 等逐 multiple 计算 + median-of-medians 综合，并与 DCF 交叉 (差异 > 25% 需解释)。
+- **Implied Valuation**: `Implied EV = peer_median_EV/EBITDA * target_EBITDA` 等逐 multiple 计算 + median-of-medians 综合，并与主引擎（DCF 或 dispatcher 路由引擎）交叉 (差异 > 25% 需解释)。
 - 输出 `models/peer_comps.csv + peer_chart_data.csv`，脚本同样 Python-first。
 
 ```python

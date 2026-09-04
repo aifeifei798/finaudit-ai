@@ -1,8 +1,14 @@
-# params/us.yaml — 美股 (US GAAP) v1.1.0
+# params/us.yaml — 美股 (US GAAP) v1.4.0
 market: us
 accounting: US_GAAP
 currency: USD
 fx_source: Fed_H10
+rf_anchor: US_10Y
+erp_source: Damodaran_US
+crp_default: 0.0
+adr_crp_rule: operating_country_crp_mandatory
+discount_currency_rule: operating_then_spot_to_listing
+restatement_policy_default: as-restated
 fy_default_end: mixed_52_53_week
 peer_industry_map: gics11
 valuation_tier_default: mature_with_ust_anchor

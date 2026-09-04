@@ -1,12 +1,18 @@
 {
-  "version": "1.2.0",
+  "version": "1.4.0",
   "target": "TICKER_PERIOD",
   "market": "cn|hk|us",
+  "run_mode": "institutional|batch-autonomous",
+  "restatement_policy": "as-restated|as-reported",
+  "discount_currency": "operating|listing",
+  "valuation_engine": "",
   "stages": {
     "screen": "PENDING",
     "collect": "PENDING",
     "research": "PENDING",
     "parser": "PENDING",
+    "footnote_slicer": "PENDING",
+    "pii_sanitize": "NOT_REQUIRED",
     "evidence": "PENDING",
     "fraud_metrics": "PENDING",
     "analyst": "PENDING",
@@ -24,12 +30,16 @@
     "portfolio": "PENDING",
     "skeptic": {
       "status": "PENDING",
+      "round": 0,
+      "max_round": 2,
       "by": "",
       "at": ""
     },
+    "unresolved_discrepancies": [],
     "compliance": "PENDING",
     "judge": "PENDING",
+    "webhook": "NOT_REQUIRED",
     "report": "PENDING"
   },
-  "notes": "Idempotency: 任一 stage 为 SUCCESS 则跳过重跑；FAILED 必须先修后改状态再跑。analyst_gate 仅当 multi-doc 触发三条件时变为 REQUIRED->APPROVED。sentiment/macro/esg (events) 失败不阻塞估值。终稿需 compliance pass + judge pass + skeptic SIGNED_OFF。"
+  "notes": "Idempotency: 任一 stage 为 SUCCESS 则跳过重跑；FAILED 必须先修后改状态再跑。run_mode=batch-autonomous 时 analyst_gate 可为 AUTO_PASSED_WITH_WARNINGS、skeptic 超2轮转 Unresolved 放行，均须在终稿披露。restatement_policy: 实时前瞻用as-restated(重述优先)，历史回测用as-reported(当时口径防未来偏差)。终稿需 compliance pass + judge pass + skeptic SIGNED_OFF(含Unresolved签收)。"
 }

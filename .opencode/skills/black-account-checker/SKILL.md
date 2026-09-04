@@ -5,7 +5,7 @@ license: MIT
 compatibility: opencode
 metadata:
   author: "金融安全审计组"
-  version: "1.1.0"
+  version: "1.4.0"
 ---
 
 # 查黑账 · Black Account Checker
@@ -19,6 +19,11 @@ metadata:
 ---
 
 ## 1. 调查六步法
+
+### Step 0 — PII 强制脱敏 (v1.4.0 P0，未做禁止进入 Step 1)
+- 先本地运行 `pii-sanitizer-skill/sanitize.py`，原始流水**禁止**直接进入任何 LLM；LLM 只读 `sanitized.csv`。
+- 核验 `sanitize_report.json: {unmasked: 0, status: PASS}`；证据索引用脱敏行号 + 假名（`CP_001`）；原始路径只进本地 vault，不进 prompt/报告/日志。
+- 未经用户明确授权，原始/脱敏文件均不得传出境内执行环境。
 
 ### Step 1 — 数据清洗
 - 统一时间格式、金额单位、账户编码
@@ -138,3 +143,4 @@ sort -t',' -k2,2 -k3,3rn <file> | head -20  # 按对手方+金额排序
 - ❌ 忽略反例或矛盾证据
 - ❌ 仅凭单一指标下定论（需至少2个独立指标交叉验证）
 - ❌ 泄露敏感数据给无关方
+- ❌ 将未脱敏流水（含卡号/姓名/账户）输入任何商用大模型或拼入 URL/日志（P0 红线，见 Step 0）

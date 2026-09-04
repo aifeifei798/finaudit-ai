@@ -1,7 +1,7 @@
 {
   "name": "dcf",
-  "description": "纯估值建模模式：三表清洗与 DCF 测算",
+  "description": "估值建模模式：Dispatcher选引擎 + 三表清洗 + Multiples交叉",
   "agents": ["financial-researcher", "valuation-expert"],
-  "skills": ["financial-research-skill", "financial-parser-skill", "valuation-modeling-skill", "peer-comparison-skill", "excel-export-skill"],
-  "prompt": "针对 {{target}} 执行纯估值建模。流程: 1. financial-researcher 用 financial-research-skill + financial-parser-skill 做三表清洗到 workspace/targets/{{target}}/extracted/；2. valuation-expert 用 valuation-modeling-skill 做 DCF (WACC 推导 + Base/Bull/Bear + 敏感性)；3. peer-comparison-skill 做 median 交叉；4. excel-export-skill 在 workspace/targets/{{target}}/models/ 生成活表并做公式联动验证。跳过文字废话，直奔数据与模型。Python-first，每数必 [Python Calc #ID]，越界即 ValueError 重估。"
+  "skills": ["financial-research-skill", "financial-parser-skill", "valuation-modeling-skill", "peer-comparison-skill", "excel-export-skill", "market-adapter-skill"],
+  "prompt": "针对 {{target}} 执行估值建模 (v1.4.0)。流程: 1. financial-researcher 三表清洗到 workspace/targets/{{target}}/extracted/；2. valuation-expert 按 valuation_routing.yaml 选引擎：一般工商DCF(WACC+Base/Bull/Bear+敏感性)，金融走PB-ROE/DDM，REITs走FFO/NAV，周期走mid-cycle均值，未盈利Biotech/SaaS走rNPV/EV-Sales（禁强算FCFF，违者ValueError）；SBC与租赁双列调整；discount_currency+CRP按market-adapter铁律；3. peer median交叉；4. 活表联动验证。Python-first，每数必 [Python Calc #ID]，越界即 ValueError 重估。"
 }

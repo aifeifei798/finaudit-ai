@@ -74,6 +74,7 @@ Detects companies that report massive cash balances while simultaneously borrowi
 - **Step 2**: 在 `workspace/targets/{TICKER}_{PERIOD}/models/` 下用 Python (numpy/pandas) 计算 M-Score / Z-Score / Sloan，脚本必须含 sanity bounds 校验。
 - **Step 3**: 检查 "High Cash, High Debt" paradox。
 - **Step 4**: 任一 tripwire 命中 → `fraud-screener` 提级至 🔴 并要求 "Cash Verification" 证据块 (银行函证/受限资金附注/利息收入匹配)。
+- **Step 4b (定性附注联动, v1.4.0)**: 同步读 `extracted/_footnote_index.csv` + `footnotes_focus/` 原文窗口（担保/表外VIE/受限资金/保理追索/诉讼/关联拆借）；定量灰区以上必须配 ≥1 附注原文佐证或明确 `Gap: footnotes_focus missing`，禁止纯数字下🔴定论。
 - **Step 5**: 所有数值引用格式 `[Python Calc #ID: script_name.py]`，并在 `pipeline-state.json` 记录 `fraud_metrics: SUCCESS|N/A`。
 
 ## 6. Python 参考实现骨架

@@ -5,7 +5,7 @@ license: MIT
 compatibility: opencode
 metadata:
   author: "金融安全审计组"
-  version: "1.1.0"
+  version: "1.4.0"
 ---
 
 # Valuation and Modeling Skill
@@ -39,6 +39,21 @@ This skill provides the framework for building and auditing financial models, en
 ## WACC 推导 (v1.1.0 新增，防拍脑袋)
 - `WACC = Ke*E/(D+E) + Kd*(1-T)*D/(D+E)`；`Ke = Rf + β*ERP (+size/country alpha, 单列披露)`。
 - Rf 用 10Y 国债 (备注日期)，β 用 2–5Y 周频回归或 Barra/同业 median (注明源)，ERP 4%–6% 默认并做 ±1pp 敏感性。Kd 用实际加权票息或 YTM，不得直接套 Rf+200bp 了事。
+- 跨币种（H股/ADR）必须先按 `market-adapter-skill` 跨币种铁律定 `discount_currency + CRP` 再算 Ke/WACC，否则 `ValueError`。
+
+## Valuation Dispatcher (v1.4.0 新增，防“一刀切”DCF)
+- **输入**: ticker-resolver 输出 `{gics11, sw31/hs11, profitable_flag, business_model}` + `workspace/params/valuation_routing.yaml@v1.4.0`。
+- **路由**: Financials→`financials_bypass` (PB-ROE + DDM，禁 FCFF/WACC)；REITs→`reit_bypass` (FFO/AFFO + NAV/cap rate)；周期→`mid_cycle_normalized` (5–10Y均值盈利 + PB Band，禁单年峰值外推)；未盈利Biotech/SaaS→`pipeline_or_sales` (rNPV / EV/Sales + Rule of 40，禁负FCF设正永续g)；其余→`dcf_fcff`。
+- **硬规则**: 命中 bypass 行业却被要求跑标准 DCF 时，脚本必须 `raise ValueError("engine mismatch: <industry> forbids fcff_dcf, reroute per valuation_routing.yaml")` 并中止 SUCCESS；路由选择写入 `_assumptions.csv` 一行 `valuation_engine: <engine> per routing@v1.4.0`。
+
+## Multiples-Engine (v1.4.0 新增，与 DCF 平级)
+- **模型集**: PE/PB Band (5Y median ±1σ)、EV/EBITDA、SOTP (conglomerate 分部加总)、DDM (金融/高分红)。
+- **口径**: 一律 median + P25/P75，负值记 N/A 不入均值；每个 multiple 注明 `N (post-IQR)`；`median-of-medians` 综合 + 与主引擎交叉 (差异 > 25% 必须解释取舍)。
+- DCF 仍要求 Gordon + Exit Multiple 双终值（差异 > 20% 解释），但不再是唯一引擎。
+
+## SBC 与租赁调整 (v1.4.0 新增，防隐形现金流失真)
+- **SBC**: 美股科技必查。双列披露 `FCF_reported` vs `FCF_adj = FCF_reported - SBC`（另计 SBC 相关现金税影响）；若 `SBC/FCF > 20%` 标 High；摊薄股数必须给 trajectory，EPS/DDM 用稀释后股数。
+- **租赁 (IFRS 16 / ASC 842)**: 双列 `EBITDA_pre/post_lease`；EV 必须把租赁负债计入 Debt；FCF 附桥接表说明经营/筹资重分类影响。未做桥接不得进 base case。
 
 ## Modeling Principles
 1. **Hardcode Minimization**: All inputs in "Assumptions" section.

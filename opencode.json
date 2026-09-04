@@ -8,7 +8,7 @@
     "orchestrator": {
       "model": "anthropic/claude-sonnet-4-6",
       "mode": "primary",
-      "description": "[T2] 总编排 — pipeline-state状态机、DAG调度、失败重试 (配gate-keeper守双门)",
+      "description": "[T2] 总编排 — pipeline-state状态机、DAG调度、双模式(institutional/batch-autonomous)、失败重试 (配gate-keeper守双门)",
       "permission": {
         "edit": "ask",
         "bash": {
@@ -90,7 +90,7 @@
     "black-account-checker": {
       "model": "anthropic/claude-sonnet-4-6",
       "mode": "primary",
-      "description": "[T2] 查黑账取证 — 私有流水六步法 + 关联穿透 (旁路，不进report主链，不跑M-Score)",
+      "description": "[T2] 查黑账取证 — 私有流水六步法 + 关联穿透 (旁路，不进report主链，不跑M-Score；Step0强制PII脱敏)",
       "permission": {
         "edit": "deny",
         "bash": {
@@ -113,7 +113,7 @@
           "*": "ask"
         }
       },
-      "skills": ["black-account-checker"]
+      "skills": ["pii-sanitizer-skill", "black-account-checker"]
     },
     "fraud-screener": {
       "model": "anthropic/claude-sonnet-4-6",
@@ -190,7 +190,7 @@
     "valuation-expert": {
       "model": "anthropic/claude-sonnet-4-6",
       "mode": "subagent",
-      "description": "[T2] 估值主理 — DCF/WACC定价 (唯一写models/建模方)",
+      "description": "[T2] 估值主理 — Dispatcher选引擎(DCF/Multiples/金融旁路)定价 (唯一写models/建模方)",
       "permission": {
         "edit": "ask",
         "bash": {

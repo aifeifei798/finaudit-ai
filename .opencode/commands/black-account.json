@@ -1,7 +1,7 @@
 {
   "name": "black-account",
-  "description": "查黑账取证模式：私有账户流水异常检测与风险核查（旁路，不进估值主链）",
+  "description": "查黑账取证模式：PII脱敏前置 + 私有账户流水异常检测（旁路，不进估值主链）",
   "agents": ["black-account-checker"],
-  "skills": ["black-account-checker"],
-  "prompt": "针对用户提供的私有账户/流水/尽调资料执行查黑账六步法（数据清洗→特征提取→异常检测→关联分析→风险定级→报告输出）。金额先归一绝对值+ISO币种；红线扫描拆分/快进快出/循环/休眠激活/集中分散/高频小额/对手方黑名单；每个发现标注置信度+证据行号；输出摘要→发现清单→证据索引→风险定级→处置建议。只做流水取证，不跑M-Score/治理红旗（上市公司排雷请用audit）。"
+  "skills": ["pii-sanitizer-skill", "black-account-checker"],
+  "prompt": "针对用户提供的私有账户/流水/尽调资料：Step0强制本地PII脱敏（sanitize.py，核验sanitize_report PASS；原始禁入LLM，只读sanitized.csv），再执行查黑账六步法（脱敏→清洗→特征→异常→关联→定级→报告）。金额先归一绝对值+ISO币种；红线扫描拆分/快进快出/循环/休眠激活/集中分散/高频小额/对手方黑名单；每个发现标注置信度+脱敏证据行号；输出摘要→发现清单→证据索引→风险定级→处置建议。只做流水取证，不跑M-Score/治理红旗（上市公司排雷请用audit）。"
 }

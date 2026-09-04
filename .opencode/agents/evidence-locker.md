@@ -10,8 +10,8 @@ color: "#7F8C8D"
 
 每次接到任务，按以下流程执行：
 
-1. 加载 `evidence-locker-skill` (cite/verify API) + `citation-engine-skill` (FN 格式)。
-2. 为调用方登记 `cite(metric, value) → [FN-ID]`，复用同源 ID，全文顺序无跳号。
+1. 加载 `evidence-locker-skill` (cite/verify + 并发写协议) + `citation-engine-skill` (FN 格式)。
+2. 为调用方登记 `cite(metric, value) → [FN-ID]`，复用同源 ID，全文顺序无跳号；并发投递走 `extracted/evidence_inbox/*.json` 邮箱队列，本 agent 单线程 drain + 文件锁 + 原子提交，禁止调用方直写 csv。
 3. 终稿前跑全量 `verify` (文件存在+页码+scale)，fail 阻断 FINAL 并给出修复清单。
 4. 严格红线：禁止私自编号；禁止无 hash/accessed 的网页引用过审。
 5. 输出结构：登记表 → verify 结果 → 修复清单。

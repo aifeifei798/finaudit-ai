@@ -5,7 +5,7 @@ license: MIT
 compatibility: opencode
 metadata:
   author: "金融安全审计组"
-  version: "1.1.0"
+  version: "1.4.0"
 ---
 
 # Financial Parser Skill
@@ -35,6 +35,12 @@ Split into `workspace/targets/{TICKER}_{PERIOD}/extracted/`:
 - `management_discussion/`: MD&A outlook (事实与观点分列)。
 - `audit_opinion/`: Auditor's report and KAMs.
 - 单 chunk > 模型上下文 1/2 时继续按“附注号”切分，禁止整表截断。
+
+## Footnote Slicer 独立通道 (v1.4.0 新增，附注不再降级为普通文本)
+- **输出**: `extracted/footnotes_focus/` + 索引 `extracted/_footnote_index.csv` (列: `note_id|title|pages|risk_score|risk_reason|verbatim_path|FN-ID`)。
+- **必筛重点章节** (命中即重点推理，不许只抽数字): Commitments & Contingencies（担保/表外/VIE）、Related Parties（关联定价/资金拆借）、Segment Reporting、Restricted Cash（受限资金）、Debt Covenants、Litigation、AR保理附追索权、股份质押。
+- **流程**: T1 粗筛全附注打 `risk_score (0-3)` → score≥2 的章节保留**原文聚焦窗口** (verbatim excerpt，单窗 ≤4k tokens，保留 `source_file:page:note_id` 锚点) 供 T2 fraud-screener / L4 做定性推理；score≤1 只存摘要 + 页码指针。
+- **Selective Long-Context Bypass**: T2/L4 只读 `footnotes_focus/` 原文窗口，仍禁读 raw PDF 全文——既控 token，又不漏附注猫腻。未建聚焦窗口不得声称“已扫附注”，写 `Not screened, confidence: Low`。
 
 ## Extraction Standards
 1. **Table Integrity**: 优先 XBRL tags (SEC) / 巨潮结构化财报；PDF 表格用 camelot/tabula 类工具并人工抽查 5 行；禁止用纯文本流推断表格。

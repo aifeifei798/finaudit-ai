@@ -3,5 +3,5 @@
   "description": "目标筛查模式：代码消歧 + 公告采集 + peer初筛",
   "agents": ["ticker-resolver", "filing-collector"],
   "skills": ["financial-research-skill", "market-adapter-skill"],
-  "prompt": "针对 {{target}} 执行目标筛查。1. ticker-resolver 消歧 {market,ticker,period,FY_end,currency} 并 peer 初筛 5-10 家；2. filing-collector 按市场路由下载到 workspace/targets/{{target}}/raw/ 并写 _bibliography.csv 初版。输出沙盒就绪报告 + Gap + pipeline-state.json {research} 初始化。"
+  "prompt": "针对 {{target}} 执行目标筛查 (v1.4.0)。1. ticker-resolver 消歧 {market,ticker,period,FY_end,currency,operating_currency,gics11,sw/hs_industry,profitable_flag,valuation_engine_hint} 并 peer 初筛 5-10 家；2. filing-collector 按市场路由下载到 workspace/targets/{{target}}/raw/ 并经 evidence_inbox 写 _bibliography.csv 初版。输出沙盒就绪报告 + Gap + pipeline-state.json {research, run_mode, restatement_policy} 初始化。"
 }

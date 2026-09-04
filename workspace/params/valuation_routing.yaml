@@ -1,0 +1,37 @@
+# valuation_routing.yaml — 估值引擎路由表 v1.4.0
+# ticker-resolver 输出 {gics11, sw31/hs11} + profitability 后，由 valuation-expert 按本表选引擎。
+# 严禁对金融/REITs/未盈利管线资产强算标准 FCFF-DCF；命中 bypass 即 ValueError 转路由。
+version: "1.4.0"
+default_engine: dcf_fcff
+routes:
+  - match: {sector: [Financials, Banks, Diversified_Financials, Insurance]}
+    engine: financials_bypass
+    primary: [pb_roe, ddm]
+    forbidden: [fcff_dcf, wacc_ev]
+    note: "银行/券商/保险无传统WC/FCFF；利息是营业成本，资本受充足率监管。用 PB-ROE 回归 + DDM，Kd/WACC 不适用。"
+  - match: {sector: [Real_Estate, REITs]}
+    engine: reit_bypass
+    primary: [ffo_multiple, affo_yield, nav_cap_rate]
+    forbidden: [fcff_dcf]
+    note: "用 FFO/AFFO + NAV/cap rate；折旧加回口径与普通 DCF 不同。"
+  - match: {sector: [Energy, Materials], tag: [cyclical]}
+    engine: mid_cycle_normalized
+    primary: [mid_cycle_ebitda_multiple, pb_band, dcf_normalized]
+    note: "周期股用跨周期均值盈利（5-10Y mid-cycle EBITDA/ROE）+ PB Band，禁用单年峰值外推 Gordon。"
+  - match: {tag: [biotech_unprofitable, pre_profit_saas]}
+    engine: pipeline_or_sales
+    primary: [rnpv_pipeline, ev_sales, rule_of_40]
+    forbidden: [gordon_on_negative_fcf]
+    note: "未盈利Biotech用管线rNPV加总；SaaS用EV/Sales+Rule of 40；负FCF禁设正向永续g。"
+  - match: {sector: [default]}
+    engine: dcf_fcff
+    primary: [dcf_fcff, exit_multiple_crosscheck, multiples_band]
+    note: "一般工商企业默认 FCFF-DCF，但终值必须 Gordon + Exit Multiple 双算（差异>20%解释）。"
+sbc_rule:
+  disclose: [fcf_reported, fcf_adj_ex_sbc]
+  flag_high_if_sbc_over_fcf: 0.20
+  shares: diluted_trajectory_mandatory
+lease_rule:
+  standards: [IFRS16, ASC842]
+  disclose: [ebitda_pre_post_lease, ev_with_lease_debt, fcf_bridge]
+  note: "经营租赁资本化虚增EBITDA/OCF；EV必须加回租赁负债，FCF桥接经营/筹资重分类影响。"
