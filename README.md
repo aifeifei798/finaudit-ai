@@ -51,9 +51,9 @@ All commands have `.json` + `.md` dual entries: `screen` (L0–L1 intake) · `au
 
 > v1.3.0 role split: `audit` → `fraud-screener` (listed-company M-Score/governance, main chain only, never touches private flows); `black-account` → `black-account-checker` (private CSV/Excel 6-step forensics, on-demand sidecar, never runs M-Score); `report` main chain uses `fraud-screener`, plus `black-account-checker` only when the user attaches private flows.
 > v1.4.0: valuation dispatcher (`valuation_routing.yaml`, no forced FCFF-DCF for financials/REITs/cyclicals/pre-profit) · footnote focus windows (`footnotes_focus/`) · PII sanitizer Step 0 before any LLM sees private flows · `institutional`/`batch-autonomous` dual run modes + Challenge-Log max-2-round fuse + evidence inbox locking + `webhook_payload.json` · PIT `as-reported`/`as-restated` + cross-currency discount hardening.
-> v1.5.0: Unresolved→估值/仓位强制 Haircut（`risk_penalty_matrix.yaml`）· PII 加盐确定性映射（跨期不断链+阅后销毁）· SOTP 分部调度（集团拆 2–3 分部独立引擎加总）· 附注交叉引用追溯（Expansion Fetching）· FX 折算 T=0 即期单点铁律。
-> v1.6.0: 问询函采集（近24个月问询函+回函+临时公告，与附注同级）· 资金池指纹过滤（`[TREASURY_POOL]`+反伪装升级）· 期初债务计息破循环引用 · 困境兜底（清算/Net-Net/EV-Sales）+ `(WACC−g)≥1.5%` Clamp · 红队极化（空头CIO+KPI，反阿谀）。
-> v1.7.0: 合议审判（举证标准+法官`Dismiss without Merit`防误杀）· 问询函脱水（15%~20%+跨页表格缝合）· ADR/双重股权归一化（比率链硬化）· 流水-三表三角勾稽（穿透表外保理）· 令牌桶流控+共享公告缓存。
+> v1.5.0: mandatory Unresolved→valuation/position Haircut (`risk_penalty_matrix.yaml`) · salted deterministic PII mapping (unbroken cross-period topology + destroy-after-read) · SOTP segment dispatch (conglomerates split into 2–3 segments with independent engines, summed) · footnote cross-reference tracing (Expansion Fetching) · T=0 spot FX conversion iron rule.
+> v1.6.0: regulatory-enquiry sweep (trailing-24-month enquiry letters + replies + ad-hoc announcements, ranked with footnotes) · treasury-pool fingerprint filter (`[TREASURY_POOL]` + anti-camouflage escalation) · beginning-debt interest breaking circular refs · distressed fallback (liquidation/Net-Net/EV-Sales) + `(WACC−g)≥1.5%` clamp · polarized red team (short-seller CIO + KPI, anti-sycophancy).
+> v1.7.0: dialectical bench (evidentiary standard + judge's `Dismiss without Merit` against false positives) · enquiry de-hydrator (15%–20% + cross-page table stitching) · ADR/dual-class normalization (hardened ratio chain) · flow-statement triangular audit (piercing off-BS factoring) · token-bucket rate limiting + shared filing cache.
 
 ## 🛠️ Technical Stack
 
