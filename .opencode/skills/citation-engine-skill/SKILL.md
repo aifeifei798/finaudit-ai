@@ -5,7 +5,7 @@ license: MIT
 compatibility: opencode
 metadata:
   author: "金融安全审计组"
-  version: "1.1.0"
+  version: "1.8.0"
 ---
 
 # Citation & Footnote Engine Skill
@@ -21,6 +21,11 @@ This skill enforces strict traceability and compliance in financial reporting, e
 3. **Calculation Traceability**: 派生数必须 `... [FN-20; Calc #45: models/dcf_v1.py:L88]`，Calc ID = `run_log.jsonl` 中的 run_id，可重跑。
 4. **Source Hierarchy**: Primary (filings/audited/IR) > Secondary (deck/sell-side/industry) > Tertiary (news/blogs)。Tertiary 不可单独支撑定量结论。
 5. **Exemptions (v1.1.0 新增，防教条)**: 纯算术中间步骤、目录/页眉、敏感性轴标签可免 FN，但最终输出数仍需 FN+Calc。
+
+## Decision Lineage DAG 决策血统图 (v1.8.0 新增，30秒溯源)
+- **文件**: `workspace/targets/{TICKER}_{PERIOD}/models/lineage_manifest.json`。每个进终稿/活表的关键数值（Target Price、WACC、FCF、CapEx、g）一条记录：`{metric, value, derived_from: [FN-ID / Calc#run_id / guidance_row / challenge_C-ID / haircut_tier / credit_flag], agent, at}`。
+- **示例链**: `Target Price ← WACC (Haircut from Skeptic C-02) ← Footnote 14 cross-ref ← Enquiry Reply p.42`。
+- **写者义务**: valuation-expert / scenario / portfolio 每次写数即追加血统记录；report-writer 渲染“Lineage 附录”；judge-qa 抽查 ≥3 条链端到端可达，否则 fail。`run_log.jsonl` 只管成本，血统管因果。
 
 ## Bibliography Schema (`workspace/targets/{TICKER}_{PERIOD}/extracted/_bibliography.csv`)
 `fn_id,doc_title,doc_date,file_or_url,page_table,scale_currency,level_P/S/T,accessed,hash_or_pages,notes`

@@ -21,6 +21,7 @@ pledge_severe: 0.50
 pledge_critical: 0.50
 guarantee_to_na_warn: 0.20
 rpt_to_na_warn: 0.05
+credit_distress_spread_bps: 800
 halt_limit: null
 filing_sources: [edgar, edgar_corresp, edgar_upload]
 fraud_lexicon: [ASC606, stock_compensation, comment_letter, class_action, restatement]

@@ -20,6 +20,11 @@ metadata:
 5. **估值边界 (bounds)**: 成熟/高增长-新兴/困境三档 WACC 与 g，见 `valuation-modeling-skill`；`market` 只决定默认档 (cn 默认成熟+政策溢价备注, hk 默认成熟+AH折价, us 默认成熟+UST 锚)。
 6. **欺诈词库 (fraud_lexicon)**: A股 (关联占用/存贷双高/商誉)、港股 (老千股/供股/核数师辞任)、美股 (ASC606/期权费用/collective litigation) 分开维护。
 
+## Credit-Spread Cross-Check 信用交叉探针 (v1.8.0 新增，债市是权益的警报器)
+- **输入**: `extracted/_credit.csv`（列：`bond|ytm|spread_bps|price|asof|source`，覆盖境内中票/公司债 + 境外美元债 + 主体 CDS）。
+- **触发**: 任一存续债 spread > 800bps（见 `params/{cn,hk,us}.yaml: credit_distress_spread_bps`）→ 打 `CREDIT_DISTRESS`：强制去杠杆，剥夺任何“估值抄底”买入权限（最高观察仓），终稿醒目披露；`portfolio-strategist` 未读 `_credit.csv` 不得给仓位。
+- 无存续债/无报价写 `Gap: no credit coverage`，不默认安全。
+
 ## 附注切分正则 (分市场)
 - CN: `五[、,，]\s*\d+` / `附注\d+`；HK: `Note\s*\d+` 中英双语；US: `Item\s*8|Note\s*\d+`。语言路由：中文附注优先中文强抽取，英文优先英文模型 (见 model-tiers)。
 

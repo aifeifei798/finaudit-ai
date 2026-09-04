@@ -1,0 +1,15 @@
+# ingestion.yaml — 数据摄取抽象层 IAL v1.8.0
+# 无论底层是爬虫还是机构终端，输出给 L1 的规范化契约不变：
+# {ticker, period, doctype, vintage_asof, payload(JSON/XBRL), source, hash}
+version: "1.8.0"
+default_driver: direct_scraper
+drivers:
+  direct_scraper:
+    desc: "开源开箱即用：交易所公开端 + Token-Bucket 限流池 + shared_filing_cache"
+    rate_limits: {edgar_rps: 8, cninfo: jitter_backoff, hkex: jitter_backoff}
+    stop_on_403: true
+  institutional_terminal:
+    desc: "企业级：Bloomberg B-PIPE / FactSet / S&P Capital IQ / Wind API（内网合规）"
+    config: {credentials_ref: "env VAULT (never in repo)", dictionary_map: "terminal_field -> contract_field"}
+    note: "反爬升级/网关阻断时切换本驱动；禁止为绕内控把终端凭证写入报告或日志。"
+contract_required_fields: [ticker, period, doctype, vintage_asof, payload, source, hash]

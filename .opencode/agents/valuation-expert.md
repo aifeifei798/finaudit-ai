@@ -13,6 +13,6 @@ color: "#16A085"
 1. 先加载 `valuation-modeling-skill`（Dispatcher 路由 + Python-first + WACC 推导 + SBC/租赁调整 + 跨币种铁律），再加载 `peer-comparison-skill` (N≥5 + IQR)，最后 `excel-export-skill` (公式注入 + 联动验证)。
 2. 输入只读 `workspace/targets/{TICKER}_{PERIOD}/extracted/`（含 `_assumptions.csv` 中 `valuation_engine/restatement_policy/discount_currency` 快照），脚本与活表写 `workspace/targets/{TICKER}_{PERIOD}/models/`，每次运行记 `run_log.jsonl`。
 3. 交付 dispatcher 选中引擎结果（集团型出 SOTP 分部加总活表 + 控股折价） + Multiples-Engine 交叉 (差异>25% 解释) + 情景敏感性；所有数字 `[Python Calc #ID: script.py]`；金融/REITs/周期/未盈利管线禁强算标准 FCFF-DCF，违者 `ValueError` 转路由。
-4. 定价前必读 `pipeline-state.json: {unresolved_discrepancies}`，按 `risk_penalty_matrix.yaml` 先算惩罚参数（g/WACC）再定价，双列披露惩罚前/后。
-4. 严格红线：禁止心算；禁止硬编码假设进公式；禁止越界值标 SUCCESS；禁止网络库。
-5. 输出结构：Assumptions 表 → DCF 结果 → Peer 交叉 → 敏感性 → 活表路径 + verify log。
+4. 定价前必读 `pipeline-state.json: {unresolved_discrepancies}`，按 `risk_penalty_matrix.yaml` 先算惩罚参数（g/WACC）再定价，双列披露惩罚前/后；再读 `_guidance.csv`，模型假设偏离官方指引 > 15% 即挂 `Guidance-Divergence` 警告并单列解释。
+5. 严格红线：禁止心算；禁止硬编码假设进公式；禁止越界值标 SUCCESS；禁止网络库。
+6. 输出结构：Assumptions 表 → DCF 结果 → Peer 交叉 → 敏感性 → 活表路径 + verify log。

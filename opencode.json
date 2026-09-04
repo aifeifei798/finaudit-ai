@@ -159,7 +159,7 @@
     "industry-peer-analyst": {
       "model": "anthropic/claude-sonnet-4-6",
       "mode": "subagent",
-      "description": "[T2] 行业对标 — peer benchmarking + 宏观归因 + ESG负面筛查",
+      "description": "[T2] 行业对标 — peer benchmarking + 宏观归因 + ESG负面筛查 + Consensus预期差",
       "permission": {
         "edit": "ask",
         "bash": {
@@ -171,7 +171,7 @@
           "*": "ask"
         }
       },
-      "skills": ["peer-comparison-skill", "macro-context-skill", "esg-redflag-skill", "market-adapter-skill"]
+      "skills": ["peer-comparison-skill", "macro-context-skill", "esg-redflag-skill", "market-adapter-skill", "consensus-benchmarker-skill"]
     },
     "sentiment-event-analyst": {
       "model": "anthropic/claude-sonnet-4-6",

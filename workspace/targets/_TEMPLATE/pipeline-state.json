@@ -1,5 +1,5 @@
 {
-  "version": "1.5.0",
+  "version": "1.8.0",
   "target": "TICKER_PERIOD",
   "market": "cn|hk|us",
   "run_mode": "institutional|batch-autonomous",
@@ -10,6 +10,8 @@
     "screen": "PENDING",
     "collect": "PENDING",
     "enquiry": "PENDING",
+    "transcript": "PENDING",
+    "guidance": "PENDING",
     "research": "PENDING",
     "parser": "PENDING",
     "footnote_slicer": "PENDING",
@@ -24,10 +26,13 @@
       "notes": ""
     },
     "peers": "PENDING",
+    "consensus": "PENDING",
+    "credit": "PENDING",
     "events": "PENDING",
     "valuation": "PENDING",
     "scenario": "PENDING",
     "visual": "PENDING",
+    "lineage": "PENDING",
     "portfolio": "PENDING",
     "skeptic": {
       "status": "PENDING",

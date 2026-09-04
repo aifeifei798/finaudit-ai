@@ -1,4 +1,4 @@
-# Agents Guide - FinAudit AI (v1.7.0 全栈)
+# Agents Guide - FinAudit AI (v1.8.0 全栈)
 
 ## Agents & Skills (19 agents, T1/T2/T3 分级；排雷归 fraud-screener，流水取证归 black-account-checker)
 | 层 | Agent | Skills | Tier |
@@ -55,7 +55,14 @@
 4. **三角勾稽**：流水-三表矩阵（大存大贷/预付异象/流量-规模背离），流水漂亮亦可推翻标红。
 5. **流控缓存**：Token-Bucket（EDGAR≤8 req/s+合规UA，CNINFO/HKEX jitter+退避）+ `shared_filing_cache/` 强制命中，403 即停保 IP。
 
-## Workspace (Canonical v1.7.0)
+## v1.8.0 演进（第五阶买方实战壁垒）
+1. **电话会指引**：`transcript-collector`（最新季度 Earnings Call 全文+NDR）+ `guidance-extractor`（`_guidance.csv`），模型偏离官方指引 > 15% 挂 `Guidance-Divergence` 警告。
+2. **一致预期差**：`consensus-benchmarker-skill`（`_consensus.csv`→`consensus_delta.csv`），终稿回答 Alpha 来源；无覆盖写 N/A 并降 conviction。
+3. **信用交叉**：`credit_cross_asset_probe`（`_credit.csv`，spread > 800bps 打 `CREDIT_DISTRESS`，去杠杆+剥夺抄底权限）。
+4. **血统图**：`models/lineage_manifest.json`（关键数值的 `derived_from` 因果链），report-writer 渲染附录，judge-qa 抽查。
+5. **摄取抽象层**：`params/ingestion.yaml` 双驱动（DirectScraper / InstitutionalTerminal），输出契约不变。
+
+## Workspace (Canonical v1.8.0)
 - `workspace/targets/{TICKER}_{PERIOD}/`: 独立沙盒 (唯一写入目标)。
   - `raw/`、`extracted/` (领域分块 + `footnotes_focus/` + `_footnote_index.csv` + `evidence_inbox/` + `_bibliography.csv` + `_reconciliation_log.csv` + `_assumptions.csv` + `_peers.csv` + `fx_rates.csv` + `macro_brief.md` + `_events.csv` + `_esg_flags.csv`)、`models/` (`run_log.jsonl` + `MODEL_MAP.md` + `.xlsx` + `charts/` + `position_table.csv`)、`pipeline-state.json` (含 run_mode/restatement_policy/discount_currency/valuation_engine/segments/skeptic round/unresolved/risk_penalty/webhook)。
 - `workspace/targets/_TEMPLATE/`：脚手架；`workspace/params/{cn,hk,us}.yaml` (rf_anchor/erp/crp/discount规则) + `valuation_routing.yaml`；`workspace/peer_benchmarks/`：peer 库 + `sw_hs_gics_mapping.csv`；`workspace/reports/`：终稿；`workspace/reviews/`：双签收 + `webhook_payload.json`。

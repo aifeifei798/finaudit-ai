@@ -20,6 +20,7 @@ pledge_severe: 0.70
 pledge_critical: 0.80
 guarantee_to_na_warn: 0.30
 rpt_to_na_warn: 0.05
+credit_distress_spread_bps: 800
 halt_limit: 0.10
 filing_sources: [cninfo, sse, szse, sse_enquiry, szse_enquiry, cninfo_reply]
 fraud_lexicon: [关联占用, 存贷双高, 商誉爆雷, 审计意见购买, 资金占用]

@@ -34,6 +34,19 @@ This skill enables the agent to perform end-to-end financial research by integra
 - **中央持久化缓存** `workspace/shared_filing_cache/`（键：`source/doctype/ticker/period/vintage_hash`）：同业 peer 公共宏观数据、已采定期报告**强制命中缓存**，严禁重复请求外网；缓存命中记 `cache: HIT` 入 `_bibliography.csv`，缺失才走外网并回填。
 - batch-autonomous 模式下 collector 必须先查缓存再排队限流，违例导致 IP 封禁记 `collect: FAILED` 并阻断同批后续外网任务（保 IP）。
 
+## Transcript Collector 电话会采集 (v1.8.0 新增，看前视镜)
+- **范围**: 最新季度 Earnings Call 全文（Prepared Remarks + Q&A Session）+ NDR 纪要；命名 `YYYYMMDD_source_transcript.pdf` 存 `raw/`，`level=S`（Secondary，仅次于审计财报）。
+- **用途**: 捕捉三表外前瞻变量——订单积压 Backlog、CapEx 削减计划、试产良率、Churn、渠道库存/毛利率预警（电话会一句话常比三表先行 1–4 个月）。
+- 缺失记 Gap（`transcript: NOT_FOUND`），不得用旧季度电话会冒充当季。
+
+## Guidance Extractor 指引抽取 (v1.8.0 新增)
+- 强制提取管理层下季度/全年 Revenue/CapEx/EPS 指引区间 → `extracted/_guidance.csv`（列：`metric|low|high|period|source|FN-ID`)。
+- **Guidance-Divergence 铁律**: `valuation-expert` 模型假设与官方指引偏离 > 15% 即触发警告，终稿必须单列解释分歧原因；无解释不得进 base case。
+
+## Ingestion Abstraction Layer 摄取抽象层 (v1.8.0 新增，配置见 `params/ingestion.yaml`)
+- **双驱动**: `direct_scraper`（默认：公开端 + 限流池 + 共享缓存）/ `institutional_terminal`（Bloomberg B-PIPE / FactSet / CapIQ / Wind，内网合规，凭证只走 env vault）。
+- **契约不变**: 无论哪种驱动，输出 L1 的字段契约完全一致（ticker/period/doctype/vintage_asof/payload/source/hash）；反爬升级或网关阻断即切终端驱动，禁止硬扛刷 IP。
+
 ## Search Strategy
 - Keywords: `"Form 10-K"`, `"Annual Report YYYY"`, `"年报 / 审计报告"`, `"Earnings Presentation"`, `"H shares prospectus"` + ticker/CIK/证券代码。
 - EDGAR: 先用 CIK 定位 (company_tickers.json)，再按 filingDate 倒序取最新 10-K/10-Q/8-K；A股先取“审计报告全文 + 财务报表附注”，再取问询函回函。
