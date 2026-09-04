@@ -5,7 +5,7 @@ license: MIT
 compatibility: opencode
 metadata:
   author: "金融安全审计组"
-  version: "1.1.0"
+  version: "1.6.0"
 ---
 
 # Excel Export Skill
@@ -25,6 +25,10 @@ This skill enables the generation of "Living Excel" models where the output is n
 2. **Balance Check**: `=IF(ABS(Assets-Liab-Equity)<=MAX(0.005*TA,scale),"TRUE","FALSE")` 独立 Check 列/行；FALSE 禁止标 SUCCESS。
 3. **Audit Trail**: Simple traceable formulas; no array black-box; 每个跨表引用加批注 `source: Assumptions!B4`。
 4. **Post-write verify (v1.1.0 新增)**: 写完后用 Python 重开 (`data_only=False`) 抽查 ≥5 个公式含跨表引用 + 用 `libreoffice --headless --convert-to csv` 或 openpyxl 计算值抽查，失败重写。记录 `models/excel_verify.log`。
+
+## Circular-Reference Break (v1.6.0 新增，利息闭环脱钩)
+- **铁律**: 利息一律按**期初债务余额**计提（`Interest_t = rate × Debt_{t-1}`），禁止引用当期期末现金/新增借款反推的债务余额；现金→借款→利息→利润→现金闭环在数学上断开，活表改任一假设仍全表联动，且 Excel 永不弹循环引用警告。
+- **校验**: 写完后用 openpyxl 扫描公式依赖图，出现自环即重写；联动测试（改 g / WACC 各 1 次）Summary 必须跟动并记 `excel_verify.log`。
 
 ## Export Workflow
 - **Step 1**: Define structure in Python (`models/build_excel.py`)。

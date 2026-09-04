@@ -9,6 +9,7 @@
   "stages": {
     "screen": "PENDING",
     "collect": "PENDING",
+    "enquiry": "PENDING",
     "research": "PENDING",
     "parser": "PENDING",
     "footnote_slicer": "PENDING",

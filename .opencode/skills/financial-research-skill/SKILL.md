@@ -5,7 +5,7 @@ license: MIT
 compatibility: opencode
 metadata:
   author: "金融安全审计组"
-  version: "1.1.0"
+  version: "1.6.0"
 ---
 
 # Financial Research Skill
@@ -23,6 +23,11 @@ This skill enables the agent to perform end-to-end financial research by integra
 - CN: `cninfo.com.cn`, `sse.com.cn`, `szse.com.cn`, `*.com.cn IR` (附录声明)
 - HK: `hkexnews.hk`, `*.com.hk IR`
 - 非白名单域默认 Tertiary，需 `financial-analyst` 特批方可升级。Paywall/需登录源必须标注 `Access: restricted, confidence capped at Medium`。
+
+## Regulatory Enquiry Collector (v1.6.0 新增，定期报告之外的致命证据)
+- **范围**: CN 近24个月交易所《年报问询函/监管工作函 + 回复公告》（穿透前五大客户、超期应收对手方、受限资产细节）；US 近24个月 SEC Comment Letters（CORRESP/UPLOAD）；HK 监管查询函；临时公告（质押被动平仓、高管/审计委员会主席/内审总监辞职）。
+- **优先级**: 问询函+回函与 footnotes 同级，直送 `footnotes_focus/` 聚焦窗口并在 `_footnote_index.csv` 标 `source_class: regulatory_enquiry`；fraud-screener 必须先读问询函窗口再下排雷结论，无问询函覆盖不得声称“监管无质疑”，写 `Not covered, confidence: Low`。
+- **命名**: `YYYYMMDD_source_enquiry_<topic>.pdf` 存 `raw/`；缺失记 Gap（定期报告漂亮但问询函缺席本身即风险信号）。
 
 ## Search Strategy
 - Keywords: `"Form 10-K"`, `"Annual Report YYYY"`, `"年报 / 审计报告"`, `"Earnings Presentation"`, `"H shares prospectus"` + ticker/CIK/证券代码。

@@ -1,8 +1,14 @@
 # valuation_routing.yaml — 估值引擎路由表 v1.5.0
 # ticker-resolver 输出 {gics11, sw31/hs11, is_conglomerate, segments[]} + profitability 后，由 valuation-expert 按本表选引擎。
 # 严禁对金融/REITs/未盈利管线资产强算标准 FCFF-DCF；命中 bypass 即 ValueError 转路由。
-version: "1.5.0"
+version: "1.6.0"
 default_engine: dcf_fcff
+distressed_probe:
+  flag_if: "BV < 0 或近三年FCF连续<0 或债务市值不可得"
+  engine: distressed_fallback
+  primary: [liquidation_value, net_net, ev_sales_median]
+  forbidden: [fcff_dcf, pb_roe]
+  clamp: "(WACC - g) >= 1.5%, else N/A (clamped)"
 conglomerate_probe:
   flag_if: "主业≥2个且次主业营收占比≥20%，或 segment_notes ≥2 个可拆分部"
   max_segments: 3

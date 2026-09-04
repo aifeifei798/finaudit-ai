@@ -22,7 +22,7 @@ pledge_critical: 0.50
 guarantee_to_na_warn: 0.20
 rpt_to_na_warn: 0.05
 halt_limit: null
-filing_sources: [edgar]
+filing_sources: [edgar, edgar_corresp, edgar_upload]
 fraud_lexicon: [ASC606, stock_compensation, comment_letter, class_action, restatement]
 note_regex: ["Item\\s*8", "Note\\s*\\d+"]
 xbrl_preferred: true

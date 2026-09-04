@@ -64,6 +64,11 @@ This skill provides the framework for building and auditing financial models, en
 - **探针**: ticker-resolver 给 `is_conglomerate=true`（多主业、次主业≥20%或附注可拆≥2分部）即拆 2–3 个分部，每分部独立挂引擎（寿险EV/NBV、银行PB-ROE、科技PS、联营投资NAV、开发NAV、持有物业FFO/CapRate），`models/` 出 SOTP 加总活表 + 控股折价（conglomerate discount）披露。
 - 单引擎硬套平安/腾讯/阿里类集团即判错，judge-qa 阻断。
 
+## Distressed Fallback 困境兜底 (v1.6.0 新增，防 BV<0 / NaN 爆炸)
+- **触发**: 净资产 < 0，或近三年 FCF 连续 < 0，或债务市值不可得（违约深跌）——满足任一即 distressed，严禁标准 DCF / PB-ROE，违者 `ValueError`。
+- **切换**: 强制清算价值法（Liquidation / Net-Net）或 EV/Sales 中枢；E 权重改用市值（无市值用账面 floor 0 + 披露），禁用负账面 E 进 WACC 权重。
+- **Clamp**: Sensitivity 矩阵先验 `(WACC − g) ≥ 1.5%`，违例格记 `N/A (clamped)` 不渲染；visualization 空值不断图表管线。
+
 ## Modeling Principles
 1. **Hardcode Minimization**: All inputs in "Assumptions" section.
 2. **Formula Transparency**: Traceable formulas; no deep nested IF; helper rows.

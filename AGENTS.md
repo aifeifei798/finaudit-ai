@@ -1,4 +1,4 @@
-# Agents Guide - FinAudit AI (v1.5.0 全栈)
+# Agents Guide - FinAudit AI (v1.6.0 全栈)
 
 ## Agents & Skills (19 agents, T1/T2/T3 分级；排雷归 fraud-screener，流水取证归 black-account-checker)
 | 层 | Agent | Skills | Tier |
@@ -41,7 +41,14 @@
 4. **附注追溯**：Cross-Reference Resolver（参见附注X→Expansion Fetching，最多 2 跳，悬空记 Gap）。
 5. **FX时点铁律**：经营本币折现 → T=0 即期单点转上市币种（`FX: <pair> <rate> @T=0`），禁逐年主观汇率预测。
 
-## Workspace (Canonical v1.5.0)
+## v1.6.0 演进（第三阶极端工况防御）
+1. **问询函采集**：`regulatory_enquiry_collector`（近24个月问询函+回函+临时公告），与 footnotes 同级进聚焦窗口；无覆盖禁称“监管无质疑”。
+2. **资金池过滤**：Step0b `treasury_pattern_recognizer`（摘要+时间+对冲三重指纹，≥2 打标 `[TREASURY_POOL]` 不计恶意，附录披露；反伪装升级 High）。
+3. **循环引用**：`excel-export` 期初债务计息（`Interest=rate×Debt_{t-1}`），公式依赖图自环重写。
+4. **困境兜底**：`distressed_fallback`（BV<0/连亏/债无价→清算/Net-Net/EV-Sales，禁 DCF/PB-ROE）+ `(WACC−g)≥1.5%` Clamp。
+5. **红队极化**：空头 CIO 角色 + KPI（≥3 致命缺陷/打压 30%），无反证的认可判 sycophancy 打回。
+
+## Workspace (Canonical v1.6.0)
 - `workspace/targets/{TICKER}_{PERIOD}/`: 独立沙盒 (唯一写入目标)。
   - `raw/`、`extracted/` (领域分块 + `footnotes_focus/` + `_footnote_index.csv` + `evidence_inbox/` + `_bibliography.csv` + `_reconciliation_log.csv` + `_assumptions.csv` + `_peers.csv` + `fx_rates.csv` + `macro_brief.md` + `_events.csv` + `_esg_flags.csv`)、`models/` (`run_log.jsonl` + `MODEL_MAP.md` + `.xlsx` + `charts/` + `position_table.csv`)、`pipeline-state.json` (含 run_mode/restatement_policy/discount_currency/valuation_engine/segments/skeptic round/unresolved/risk_penalty/webhook)。
 - `workspace/targets/_TEMPLATE/`：脚手架；`workspace/params/{cn,hk,us}.yaml` (rf_anchor/erp/crp/discount规则) + `valuation_routing.yaml`；`workspace/peer_benchmarks/`：peer 库 + `sw_hs_gics_mapping.csv`；`workspace/reports/`：终稿；`workspace/reviews/`：双签收 + `webhook_payload.json`。
