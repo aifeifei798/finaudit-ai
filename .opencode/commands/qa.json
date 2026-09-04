@@ -1,0 +1,7 @@
+{
+  "name": "qa",
+  "description": "独立质检模式：合规审查 + 数字三方比对 + HITL校验",
+  "agents": ["compliance-checker", "judge-qa", "gate-keeper"],
+  "skills": ["professional-reporting-skill", "citation-engine-skill", "evidence-locker-skill"],
+  "prompt": "针对 {{target}} 执行独立质检。1. compliance-checker 按三市场词表审查措辞 (只判不写)；2. judge-qa 三方比对报告 vs models vs extracted + 引用完整性 + 双HITL校验；3. gate-keeper 汇总放行/阻断。任一 fail 阻断 FINAL 并给出修复清单。质检模型须与 report-writer 异构。"
+}

@@ -1,0 +1,2 @@
+fn_id,doc_title,doc_date,file_or_url,page_table,scale_currency,level_P/S/T,accessed,hash_or_pages,notes
+FN-01,EXAMPLE Annual Report 2023,2024-03-15,raw/20240315_AR.pdf,p.42 Table 2.1,millions USD,P,2026-01-01,sha256:xxx,example row

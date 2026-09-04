@@ -1,0 +1,29 @@
+{
+  "version": "1.1.0",
+  "note": "T1抽取可用小模型降本，T2推理保持大模型，T3裁判须与生成异构。opencode.json内model字段当前统一sonnet，切模型时按本表替换对应agent的model即可；task_type→tier由orchestrator硬路由，不由LLM临场决定。",
+  "tiers": {
+    "T0": {
+      "role": "Embedding + Layout (非生成)",
+      "models": ["bge-m3", "PyMuPDF/Unstructured"],
+      "agents": []
+    },
+    "T1": {
+      "role": "Small Extractor (7B-14B / 4o-mini级, temp 0-0.1, JSON mode)",
+      "suggested_models": ["qwen2.5-7B", "mistral-12B", "gpt-4o-mini"],
+      "agents": ["ticker-resolver", "filing-collector", "financial-researcher", "evidence-locker", "sentiment-event-analyst", "visualization-excel"],
+      "rule": "只读raw/extracted (KB级结构化)，T1置信度低自动cascade到T2重抽"
+    },
+    "T2": {
+      "role": "Large Reasoner (70B+ / Sonnet级, temp 0.2-0.4)",
+      "suggested_models": ["anthropic/claude-sonnet-4-6"],
+      "agents": ["orchestrator", "black-account-checker", "financial-analyst", "industry-peer-analyst", "valuation-expert", "scenario-sensitivity-analyst", "portfolio-strategist", "adversarial-skeptic", "gate-keeper", "report-writer"],
+      "rule": "跨文档推理/准则判断/估值权衡/红队辩论；禁止直读raw PDF全文"
+    },
+    "T3": {
+      "role": "Judge / Critic (与T2异构, temp 0, 只判pass/fail)",
+      "suggested_models": ["与T2不同家族 (如生成用Claude则Judge用GPT)"],
+      "agents": ["compliance-checker", "judge-qa"],
+      "rule": "同模型自检通过率虚高，异构交叉是最佳实践；每次调用记model_id/prompt_hash/token/cost入run_log.jsonl"
+    }
+  }
+}

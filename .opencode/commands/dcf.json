@@ -1,7 +1,7 @@
 {
   "name": "dcf",
   "description": "纯估值建模模式：三表清洗与 DCF 测算",
-  "agents": ["valuation-expert"],
-  "skills": ["financial-parser-skill", "valuation-modeling-skill", "excel-export-skill"],
-  "prompt": "针对 {{target}} 执行纯估值建模。请调用 financial-parser-skill 进行三表清洗，valuation-modeling-skill 进行 DCF 测算，并使用 excel-export-skill 在 workspace/models/ 生成 .xlsx 活表。跳过文字废话，直奔数据与模型。"
+  "agents": ["financial-researcher", "valuation-expert"],
+  "skills": ["financial-research-skill", "financial-parser-skill", "valuation-modeling-skill", "peer-comparison-skill", "excel-export-skill"],
+  "prompt": "针对 {{target}} 执行纯估值建模。流程: 1. financial-researcher 用 financial-research-skill + financial-parser-skill 做三表清洗到 workspace/targets/{{target}}/extracted/；2. valuation-expert 用 valuation-modeling-skill 做 DCF (WACC 推导 + Base/Bull/Bear + 敏感性)；3. peer-comparison-skill 做 median 交叉；4. excel-export-skill 在 workspace/targets/{{target}}/models/ 生成活表并做公式联动验证。跳过文字废话，直奔数据与模型。Python-first，每数必 [Python Calc #ID]，越界即 ValueError 重估。"
 }

@@ -1,1 +1,20 @@
-node_modules/\n.env\n*.log\n.DS_Store
+node_modules/
+dist/
+.env
+.env.*
+*.log
+.DS_Store
+# Python / Office runtime artifacts
+__pycache__/
+*.pyc
+# Workspace runtime data (scaffolding is allow-listed back below)
+workspace/targets/*
+!workspace/targets/_TEMPLATE/
+workspace/reports/*
+workspace/reviews/*
+!workspace/reviews/_TEMPLATE_*
+workspace/raw/*
+workspace/extracted/*
+workspace/models/*
+*.xlsx
+*.pdf

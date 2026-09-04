@@ -1,46 +1,51 @@
 # FinAudit AI
 
-FinAudit AI is an AI-powered framework designed for high-precision financial auditing, fraud detection, and valuation modeling. It leverages a multi-agent system to automate the pipeline from raw financial data extraction to professional, footnoted investment reports.
+FinAudit AI is an AI-powered framework for high-precision financial auditing, fraud detection, and valuation modeling across **A-shares, Hong Kong, and US markets**. An 18-agent system automates the pipeline from raw filing extraction to professional, footnoted investment reports — with strict HITL gates and model tiering.
 
 ## 🚀 Core Capabilities
 
-The suite employs specialized agents to ensure rigorous analysis and compliance:
+| Layer | Agents |
+|---|---|
+| L0 Intake | **Orchestrator** (default, owns `pipeline-state.json`), **Ticker-Resolver** (cross-market code disambiguation), **Gate-Keeper** (sole HITL sign-off) |
+| L1 Evidence | **Filing-Collector** (CNINFO/HKEX/EDGAR routing), **Financial Researcher** (XBRL-first parsing), **Evidence-Locker** (sole `_bibliography.csv` writer) |
+| L2 Analysis | **Black Account Checker** (transaction forensics + M-Score/Z-Score/Sloan + governance red-flags), **Financial Analyst** (multi-doc reconciliation, Pre-Valuation initiator), **Industry-Peer Analyst** (peer benchmarking + macro + ESG screening), **Sentiment-Event Analyst** (event calendar, risk-only sidecar) |
+| L3 Valuation | **Valuation Expert** (DCF/WACC pricing), **Scenario-Sensitivity Analyst** (Bull/Base/Bear + WACC×g matrix), **Portfolio Strategist** (sizing/concentration/stops) |
+| L4 Risk | **Adversarial Skeptic** (short-seller red team, owns Challenge Log), **Compliance Checker** (trilingual wording review, T3), **Judge-QA** (3-way number reconciliation, heterogeneous T3 model) |
+| L5 Output | **Report Writer** (footnoted compliant report), **Visualization-Excel** (living `.xlsx` + chart pack, render-only) |
 
-- **Black Account Checker**: Audits transaction logs for fraud detection, AML (Anti-Money Laundering) analysis, and suspicious account investigation.
-- **Financial Researcher**: Handles authoritative data retrieval and high-fidelity structured data extraction (parsing) from raw filings.
-- **Financial Analyst**: Central analysis hub; performs multi-document reasoning, peer benchmarking, quantitative fraud metrics (e.g., M-Score), and corporate governance red-flag detection.
-- **Valuation Expert**: Builds financial models (DCF, WACC) and exports functional Excel models.
-- **Adversarial Skeptic**: Red-teams the findings to challenge assumptions and identify blind spots.
-- **Report Writer**: Synthesizes all findings into a professional, audit-compliant report with strict citations and neutral language.
+Model routing (`task_type→tier`, see `.opencode/model-tiers.json`): **T1** small extractors → **T2** large reasoners → **T3** heterogeneous judges; T1 low-confidence cascades to T2; every call logs `model_id/prompt_hash/token/cost` to `run_log.jsonl`.
 
 ## 📂 Workspace Architecture
 
-The system uses a sandboxed workspace for each target entity to ensure data isolation and idempotency:
+Sandboxed workspace per target (canonical, sole write destination):
 
 `workspace/targets/{TICKER}_{PERIOD}/`
-- `raw/`: Original PDFs, XBRL, and Excel filings.
-- `extracted/`: Domain-chunked structured data.
-- `models/`: Python scripts, execution logs, and `.xlsx` models.
-- `pipeline-state.json`: Tracks stage completion (e.g., `parser`, `analyst`, `valuation`).
+- `raw/`: Original PDFs, XBRL, Excel (`YYYYMMDD_source_doctype.pdf`).
+- `extracted/`: Domain-chunked data + `_bibliography.csv` + `_reconciliation_log.csv` + `_assumptions.csv` + `_peers.csv` + `fx_rates.csv` + `macro_brief.md` + `_events.csv` + `_esg_flags.csv`.
+- `models/`: Python scripts, `run_log.jsonl` (+ `cost_log.csv`), `MODEL_MAP.md`, `.xlsx` models, `charts/`, `position_table.csv`.
+- `pipeline-state.json`: Idempotency state machine (16 stages; SUCCESS skips, FAILED fixes then reruns).
 
-Shared resources are located in `workspace/peer_benchmarks/` and final outputs in `workspace/reports/`.
+Shared: `workspace/params/{cn,hk,us}.yaml` (market adapters), `workspace/peer_benchmarks/` (peer library + `sw_hs_gics_mapping.csv`), `workspace/targets/_TEMPLATE/` (scaffolding), final reports in `workspace/reports/`, HITL sign-offs in `workspace/reviews/`.
 
 ## 🛡️ Guardrails & Compliance
 
-To maintain institutional-grade accuracy, the suite enforces the following rules:
+- **Data Integrity**: Latest audited restated figures win; deltas > 1% logged per item.
+- **Normalization**: Absolute values + ISO currencies; BS spot vs IS/CF average rates separated.
+- **Calculation Safety**: Python-first with market-tiered sanity bounds (e.g., mature WACC 4–20%, g 1.5–3.5%; see `valuation-modeling-skill` for growth/emerging/distressed tiers).
+- **Evidence/Reasoning Split**: T2 never reads raw PDFs, only `extracted/`; renderers only read `*_chart_data.csv`.
+- **Legal Compliance**: Audit-compliant language; no "fraud"/"fake" labels without regulatory citations.
+- **HITL (strict, no bypass)**: Pre-Valuation (`analyst_gate: APPROVED`) and Pre-Publication (`skeptic: SIGNED_OFF` + compliance pass + judge pass), both signed solely by `gate-keeper`.
+- **Security**: Hook (`.opencode/plugins/hook.ts`) blocks rm-rf/dd/fork-bombs/curl-wget/curl|sh/python-network/env-leaks/git-force; read-only commands auto-allowed.
 
-- **Data Integrity**: Prioritizes latest audited restated figures over original reports.
-- **Normalization**: All values are normalized to absolute ISO currencies; spot and average rates are separated.
-- **Calculation Safety**: All math is performed in a Python sandbox with strict sanity bounds (e.g., WACC 4-20%, g 1.5-3.5%).
-- **Legal Compliance**: Uses audit-compliant language; no "fraud" or "fake" labels without regulatory citations.
-- **Security**: A custom plugin hook (`.opencode/plugins/hook.ts`) blocks dangerous bash commands and enforces `FINANCIAL_AUDIT_mode=strict`.
+## ⌨️ Commands
+
+All commands have `.json` + `.md` dual entries: `screen` (L0–L1 intake) · `audit` (flash fraud screen) · `dcf` (pure valuation) · `black-account` (transaction forensics) · `report` (full 18-agent loop) · `qa` (L4 independent QA).
 
 ## 🛠️ Technical Stack
 
-- **Runtime**: Node.js / TypeScript
-- **AI Framework**: opencode-ai plugin system
-- **Analysis**: Python (NumPy, Pandas, SciPy, Openpyxl)
-- **Configuration**: `opencode.json` for agent/skill mapping
+- **Runtime**: Node.js / TypeScript (opencode-ai plugin system)
+- **Analysis**: Python (NumPy, Pandas, SciPy, Openpyxl, Matplotlib)
+- **Configuration**: `opencode.json` (agent/skill map) + `.opencode/model-tiers.json` (T1/T2/T3)
 
 ## 🏁 Getting Started
 
@@ -53,7 +58,13 @@ To maintain institutional-grade accuracy, the suite enforces the following rules
    Review `opencode.json` to map agents to their respective skills.
 
 3. **Run Analysis**:
-   Initiate the pipeline for a specific ticker and period. The system will automatically check `pipeline-state.json` to resume from the last successful stage.
+   ```bash
+   # screen a target, run the full report loop, then independently QA it
+   opencode run screen --target NVDA_FY2024
+   opencode run report --target NVDA_FY2024
+   opencode run qa --target NVDA_FY2024
+   ```
+   The system checks `pipeline-state.json` to resume from the last successful stage.
 
 ## 📄 License
 

@@ -1,0 +1,35 @@
+{
+  "version": "1.2.0",
+  "target": "TICKER_PERIOD",
+  "market": "cn|hk|us",
+  "stages": {
+    "screen": "PENDING",
+    "collect": "PENDING",
+    "research": "PENDING",
+    "parser": "PENDING",
+    "evidence": "PENDING",
+    "fraud_metrics": "PENDING",
+    "analyst": "PENDING",
+    "analyst_gate": {
+      "status": "NOT_REQUIRED",
+      "by": "",
+      "at": "",
+      "notes": ""
+    },
+    "peers": "PENDING",
+    "events": "PENDING",
+    "valuation": "PENDING",
+    "scenario": "PENDING",
+    "visual": "PENDING",
+    "portfolio": "PENDING",
+    "skeptic": {
+      "status": "PENDING",
+      "by": "",
+      "at": ""
+    },
+    "compliance": "PENDING",
+    "judge": "PENDING",
+    "report": "PENDING"
+  },
+  "notes": "Idempotency: 任一 stage 为 SUCCESS 则跳过重跑；FAILED 必须先修后改状态再跑。analyst_gate 仅当 multi-doc 触发三条件时变为 REQUIRED->APPROVED。sentiment/macro/esg (events) 失败不阻塞估值。终稿需 compliance pass + judge pass + skeptic SIGNED_OFF。"
+}

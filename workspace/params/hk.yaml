@@ -1,0 +1,21 @@
+# params/hk.yaml — 港股 (HKFRS/IFRS) v1.1.0
+market: hk
+accounting: HKFRS
+currency: HKD
+fx_source: HKMA
+fx_note: HKD pegged to USD 7.75-7.85
+fy_default_end: "12-31"
+peer_industry_map: hs11_gics
+valuation_tier_default: mature_with_ah_discount
+bounds:
+  wacc: [0.04, 0.20]
+  g: [0.015, 0.035]
+pledge_warn: 0.50
+pledge_severe: 0.50
+pledge_critical: 0.50
+guarantee_to_na_warn: 0.20
+rpt_to_na_warn: 0.05
+halt_limit: null
+filing_sources: [hkexnews]
+fraud_lexicon: [老千股, 供股摊薄, 核数师辞任, 合股, 配售]
+note_regex: ["Note\\s*\\d+"]

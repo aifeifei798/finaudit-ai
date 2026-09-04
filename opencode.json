@@ -1,14 +1,96 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "default_agent": "financial-analyst",
+  "default_agent": "orchestrator",
   "skills": {
     "paths": [".opencode/skills"]
   },
   "agent": {
+    "orchestrator": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "mode": "primary",
+      "description": "[T2] 总编排 — pipeline-state状态机、DAG调度、失败重试 (配gate-keeper守双门)",
+      "permission": {
+        "edit": "ask",
+        "bash": {
+          "ls *": "allow",
+          "cat *": "allow",
+          "*": "ask"
+        }
+      },
+      "skills": ["multi-doc-reasoning-skill", "citation-engine-skill", "market-adapter-skill"]
+    },
+    "ticker-resolver": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "mode": "subagent",
+      "description": "[T1] 代码消歧 — market/ticker/period/FY口径 + peer初筛",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "ls *": "allow",
+          "cat *": "allow",
+          "*": "ask"
+        }
+      },
+      "skills": ["financial-research-skill", "market-adapter-skill"]
+    },
+    "filing-collector": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "mode": "subagent",
+      "description": "[T1] 公告采集 — 三源路由下载raw + bibliography初版",
+      "permission": {
+        "edit": "ask",
+        "bash": {
+          "ls *": "allow",
+          "grep *": "allow",
+          "head *": "allow",
+          "tail *": "allow",
+          "wc *": "allow",
+          "find *": "allow",
+          "curl *": "deny",
+          "wget *": "deny",
+          "*": "ask"
+        }
+      },
+      "skills": ["financial-research-skill", "market-adapter-skill"]
+    },
+    "financial-researcher": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "mode": "subagent",
+      "description": "[T1] 检索解析 — 结构化抽取到extracted (XBRL优先)",
+      "permission": {
+        "edit": "ask",
+        "bash": {
+          "ls *": "allow",
+          "grep *": "allow",
+          "head *": "allow",
+          "tail *": "allow",
+          "wc *": "allow",
+          "find *": "allow",
+          "curl *": "deny",
+          "wget *": "deny",
+          "*": "ask"
+        }
+      },
+      "skills": ["financial-research-skill", "financial-parser-skill"]
+    },
+    "evidence-locker": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "mode": "subagent",
+      "description": "[T1] 证据柜 — _bibliography.csv唯一写者，引证登记核验",
+      "permission": {
+        "edit": "ask",
+        "bash": {
+          "ls *": "allow",
+          "cat *": "allow",
+          "*": "ask"
+        }
+      },
+      "skills": ["evidence-locker-skill", "citation-engine-skill"]
+    },
     "black-account-checker": {
       "model": "anthropic/claude-sonnet-4-6",
       "mode": "primary",
-      "description": "查黑账 — 审计、欺诈检测与可疑账户调查",
+      "description": "[T2] 查黑账/法务审计 — 流水调查 + M-Score + 治理红旗",
       "permission": {
         "edit": "deny",
         "bash": {
@@ -22,41 +104,202 @@
           "awk *": "allow",
           "sort *": "allow",
           "uniq *": "allow",
-          "curl *": "allow",
+          "curl *": "deny",
+          "wget *": "deny",
+          "python3 *os.environ*": "deny",
+          "python3 *requests*": "deny",
+          "env": "deny",
+          "printenv": "deny",
           "*": "ask"
         }
       },
-        "skills": ["black-account-checker", "quantitative-fraud-metrics", "governance-redflags-skill"]
-    },
-    "financial-researcher": {
-      "model": "anthropic/claude-sonnet-4-6",
-      "mode": "subagent",
-      "description": "金融研究员 — 权威信息检索与证据审查",
-      "skills": ["financial-research-skill", "financial-parser-skill"]
+      "skills": ["black-account-checker", "quantitative-fraud-metrics", "governance-redflags-skill"]
     },
     "financial-analyst": {
       "model": "anthropic/claude-sonnet-4-6",
       "mode": "subagent",
-      "description": "金融分析师 — 多文档财务推理与数据协调",
-        "skills": ["multi-doc-reasoning-skill"]
+      "description": "[T2] 多文档对账 — 重述优先 + Pre-Valuation HITL发起 (不跑M-Score)",
+      "permission": {
+        "edit": "ask",
+        "bash": {
+          "ls *": "allow",
+          "cat *": "allow",
+          "python3 *": "ask",
+          "curl *": "deny",
+          "wget *": "deny",
+          "*": "ask"
+        }
+      },
+      "skills": ["multi-doc-reasoning-skill"]
+    },
+    "industry-peer-analyst": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "mode": "subagent",
+      "description": "[T2] 行业对标 — peer benchmarking + 宏观归因 + ESG负面筛查",
+      "permission": {
+        "edit": "ask",
+        "bash": {
+          "ls *": "allow",
+          "cat *": "allow",
+          "python3 *": "ask",
+          "curl *": "deny",
+          "wget *": "deny",
+          "*": "ask"
+        }
+      },
+      "skills": ["peer-comparison-skill", "macro-context-skill", "esg-redflag-skill", "market-adapter-skill"]
+    },
+    "sentiment-event-analyst": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "mode": "subagent",
+      "description": "[T1] 情绪事件 — 事件日历 + 预期差，只进风险附录",
+      "permission": {
+        "edit": "ask",
+        "bash": {
+          "ls *": "allow",
+          "cat *": "allow",
+          "*": "ask"
+        }
+      },
+      "skills": ["sentiment-event-skill"]
     },
     "valuation-expert": {
       "model": "anthropic/claude-sonnet-4-6",
       "mode": "subagent",
-      "description": "估值专家 — 财务建模与电子表格工作流",
-        "skills": ["valuation-modeling-skill", "peer-comparison-skill", "excel-export-skill"]
+      "description": "[T2] 估值主理 — DCF/WACC定价 (唯一写models/建模方)",
+      "permission": {
+        "edit": "ask",
+        "bash": {
+          "ls *": "allow",
+          "cat *": "allow",
+          "python3 *": "allow",
+          "libreoffice *": "allow",
+          "curl *": "deny",
+          "wget *": "deny",
+          "*": "ask"
+        }
+      },
+      "skills": ["valuation-modeling-skill", "market-adapter-skill"]
     },
-    "report-writer": {
+    "scenario-sensitivity-analyst": {
       "model": "anthropic/claude-sonnet-4-6",
       "mode": "subagent",
-      "description": "报告撰写专家 — 严格带脚注的合规研报",
-      "skills": ["professional-reporting-skill", "citation-engine-skill"]
+      "description": "[T2] 情景敏感性 — Bull/Base/Bear + WACC×g矩阵",
+      "permission": {
+        "edit": "ask",
+        "bash": {
+          "ls *": "allow",
+          "cat *": "allow",
+          "python3 *": "allow",
+          "curl *": "deny",
+          "wget *": "deny",
+          "*": "ask"
+        }
+      },
+      "skills": ["valuation-modeling-skill"]
+    },
+    "portfolio-strategist": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "mode": "subagent",
+      "description": "[T2] 组合策略 — 仓位/集中度/止损 (估值完成后)",
+      "permission": {
+        "edit": "ask",
+        "bash": {
+          "ls *": "allow",
+          "cat *": "allow",
+          "python3 *": "ask",
+          "*": "ask"
+        }
+      },
+      "skills": ["portfolio-construction-skill", "macro-context-skill"]
     },
     "adversarial-skeptic": {
       "model": "anthropic/claude-sonnet-4-6",
       "mode": "subagent",
-      "description": "做空者/红队质询 — 压力测试与假设挑战",
+      "description": "[T2] 红队质询 — 五情景压测 + Challenge Log拥有者",
+      "permission": {
+        "edit": "ask",
+        "bash": {
+          "ls *": "allow",
+          "cat *": "allow",
+          "python3 *": "ask",
+          "*": "ask"
+        }
+      },
       "skills": ["adversarial-skeptic-skill"]
+    },
+    "compliance-checker": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "mode": "subagent",
+      "description": "[T3] 合规审查 — 三市场措辞审查，只判不写",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "ls *": "allow",
+          "cat *": "allow",
+          "*": "ask"
+        }
+      },
+      "skills": ["professional-reporting-skill"]
+    },
+    "judge-qa": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "mode": "subagent",
+      "description": "[T3] 数字裁判 — 三方比对 + 引用完整性 + 双HITL校验 (须与writer异构)",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "ls *": "allow",
+          "cat *": "allow",
+          "python3 *": "ask",
+          "*": "ask"
+        }
+      },
+      "skills": ["citation-engine-skill", "evidence-locker-skill"]
+    },
+    "gate-keeper": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "mode": "subagent",
+      "description": "[T2] 门禁协调 — 双HITL唯一签收人，严格版无旁路",
+      "permission": {
+        "edit": "ask",
+        "bash": {
+          "ls *": "allow",
+          "cat *": "allow",
+          "*": "ask"
+        }
+      },
+      "skills": ["multi-doc-reasoning-skill", "adversarial-skeptic-skill"]
+    },
+    "report-writer": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "mode": "subagent",
+      "description": "[T2] 终稿研报 — FN合规研报 + Challenge决议附录 (门禁执行人)",
+      "permission": {
+        "edit": "ask",
+        "bash": {
+          "ls *": "allow",
+          "cat *": "allow",
+          "*": "ask"
+        }
+      },
+      "skills": ["professional-reporting-skill", "citation-engine-skill"]
+    },
+    "visualization-excel": {
+      "model": "anthropic/claude-sonnet-4-6",
+      "mode": "subagent",
+      "description": "[T1] 可视化活表 — 图表包 + 活表联动验证，只读渲染",
+      "permission": {
+        "edit": "ask",
+        "bash": {
+          "ls *": "allow",
+          "cat *": "allow",
+          "python3 *": "allow",
+          "libreoffice *": "allow",
+          "*": "ask"
+        }
+      },
+      "skills": ["excel-export-skill", "chart-visualization-skill"]
     }
-}
+  }
 }

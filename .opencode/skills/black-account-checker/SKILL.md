@@ -5,7 +5,7 @@ license: MIT
 compatibility: opencode
 metadata:
   author: "金融安全审计组"
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # 查黑账 · Black Account Checker
@@ -73,17 +73,22 @@ metadata:
 
 ## 3. 常用分析工具与命令
 
+> 安全说明 (v1.1.0): 默认禁止网络外发。`curl/wget` 仅允许经 HITL 批准的权威域名白名单 (见 `financial-research-skill`)，且禁止拼接账户明文到 URL (`?account=$ACC` 明文外发已删除)。Python 沙箱规则优先于本节示例。
+
 ```bash
 # 数据概览
 wc -l <file>          # 行数统计
 head -5 <file>        # 前5行预览
 tail -20 <file>       # 末尾20行
 
-# 字段提取与统计
+# 字段提取与统计 (CSV 含引号/逗号时优先用 Python csv/pandas，awk 仅用于简单无引号分隔文件)
 awk -F',' '{print $3}' <file> | sort | uniq -c | sort -rn  # 按列计数
 awk -F',' '{sum+=$4} END {print sum}' <file>               # 金额求和
 
-# 异常筛选
+# Python 稳健版 (推荐)
+python3 -c "import csv,collections; print(collections.Counter(r[2] for r in csv.reader(open('<file>',encoding='utf-8-sig'))))"
+
+# 异常筛选 (阈值示例，需按附录校准为绝对值+币种)
 awk -F',' '$4 > 1000000' <file>     # 大额交易
 awk -F',' '$3 < 5' <file>           # 高频交易
 grep -E "^(20[0-9]{2})-(0[0-9])" <file>  # 日期筛选
@@ -91,10 +96,12 @@ grep -E "^(20[0-9]{2})-(0[0-9])" <file>  # 日期筛选
 # 关联分析
 sort -t',' -k2,2 <file> | uniq -c -f1       # 按对手方去重计数
 sort -t',' -k2,2 -k3,3rn <file> | head -20  # 按对手方+金额排序
-
-# 外部数据查询
-curl -s "https://api.example.com/query?account=$ACC"
 ```
+
+### 红线阈值校准 (v1.1.0 新增)
+- 快进快出: 到账后 ≤30 分钟转出 ≥90% (零售) / ≤4 小时 (对公)，需结合渠道说明。
+- 拆分规避: 连续 5 笔以上金额落在报告阈值 90%–100% 区间 (如 4.5–5 万 CNY)。
+- 所有金额比较前必须归一到绝对值 + ISO 币种 (见 `financial-parser-skill`)，禁止“万元/亿元”混算。
 
 ---
 

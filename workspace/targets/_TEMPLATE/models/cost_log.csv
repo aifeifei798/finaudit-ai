@@ -1,0 +1,2 @@
+run_id,agent,model_id,tier,prompt_hash,tokens_in,tokens_out,cost_usd,status,notes
+run_001,financial-researcher,anthropic/claude-sonnet-4-6,T1,sha256:xxx,1200,800,0.0123,SUCCESS,example row

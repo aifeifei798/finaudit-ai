@@ -1,42 +1,56 @@
+---
+name: valuation-modeling-skill
+description: "估值建模 — Python优先计算、WACC/DCF/情景敏感性、健全性边界。Use when 需要DCF/WACC/倍数/三表勾稽与Base/Bull/Bear时。"
+license: MIT
+compatibility: opencode
+metadata:
+  author: "金融安全审计组"
+  version: "1.1.0"
+---
+
 # Valuation and Modeling Skill
 
 This skill provides the framework for building and auditing financial models, ensuring mathematical integrity and scenario robustness.
 
 ## MANDATORY: Python-First Calculation
-To eliminate LLM arithmetic hallucinations, ALL financial calculations must be performed using Python code executed in a sandbox.
-- **NO** mental math or text-based calculations for: DCF, WACC, LBO, Multiples, or Three-Statement balancing.
-- **Workflow**: 
-  1. Define the formula in the report.
-  2. Write a Python script using NumPy/Pandas to execute the calculation.
-  3. Use the exact output from the Python execution in the final text.
-  4. Cite the calculation as `[Python Calc #ID]`.
-- **Sandbox Path**: All scripts must be written to the target's `models/` directory (e.g., `workspace/targets/{TICKER}_{PERIOD}/models/`).
+- **NO** mental math for DCF, WACC, LBO, Multiples, Three-Statement balancing.
+- **Workflow**: 1) Define formula in report → 2) Python (NumPy/Pandas) in sandbox → 3) Use exact output → 4) Cite `[Python Calc #ID: script.py]`。
+- **Sandbox Path (canonical)**: `workspace/targets/{TICKER}_{PERIOD}/models/` (legacy `workspace/models/` 只读兼容)。
 
-## Python Sandbox Restrictions
-To ensure security and stability, all Python scripts must adhere to the following:
-- **Library Whitelist**: Only the following libraries are permitted: `numpy`, `pandas`, `scipy`, `openpyxl`, `math`.
-- **No Network Access**: Use of `requests`, `akshare`, `yfinance`, or any other networking library is strictly forbidden. All data must be read from the `extracted/` or `raw/` directories.
-- **No Environment Access**: Access to `os.environ` or system environment variables is forbidden to prevent API key leakage.
-- **Execution**: Scripts are executed in a stripped environment; do not rely on system-level configurations.
+## Python Sandbox Restrictions (v1.1.0 修正不可用白名单)
+- **Library Whitelist**: `numpy`, `pandas`, `scipy`, `openpyxl`, `math` + 只读标准库 `pathlib`, `json`, `csv`, `datetime`, `decimal`。`os` 仅允许 `os.path` 只读拼接，禁止 `os.environ` / `os.system` / `subprocess` / `socket`。
+- **No Network**: `requests`, `akshare`, `yfinance`, sockets 禁止；数据只读 `extracted/` 或 `raw/`。
+- **No Environment Access**: `os.environ` 禁止 (hook 层亦拦截 `printenv|env|os.environ`)。
+- 所有脚本头必须含 `DATA_ROOT = pathlib.Path(__file__).resolve().parents[1]` 且禁止绝对路径硬编码。
 
-## Financial Sanity Bounds (Anti-Hallucination Tripwires)
-Every Python script MUST include a validation block to check for economically absurd results. If a value falls outside these bounds, the script must raise a `ValueError` and trigger a re-evaluation of assumptions:
-- **WACC (Weighted Average Cost of Capital)**: Must be between `[4%, 20%]`.
-- **Terminal Growth Rate (g)**: Must be between `[1.5%, 3.5%]`. (Cannot exceed global GDP growth).
-- **Multiples (P/E, P/S, EV/EBITDA)**: Must be positive. If negative, mark as `N/A` and do not include in averages.
-- **Debt/Equity Ratio**: If > 5.0, trigger a "High Leverage Warning" and require a solvency check.
-- **Revenue Growth**: If > 100% or < -50% for a mature company, trigger a "Growth Anomaly Warning".
+## Financial Sanity Bounds (分市场，v1.1.0 放宽一刀切)
+默认成熟市场主业 (需在 Assumptions 声明适用档，否则用对应档):
+
+| 变量 | 默认档 (成熟) | 高增长/新兴市场档 | 困境/高杠杆档 | 越界动作 |
+|---|---|---|---|---|
+| WACC | 4%–20% | 6%–25% (声明国别风险溢价) | 8%–30% | `ValueError` + 重估假设 |
+| Terminal g | 1.5%–3.5% | 2%–5% (≤ 长期名义GDP+1pp) | 0%–2% | `ValueError` |
+| D/E | > 5.0 High Leverage Warning + 偿债测试 | 同左 | 同左 | 强制流动性附表 |
+| Revenue Growth (成熟单年) | >100% / <-50% Growth Anomaly | 初创允许 >100% 但需 cohort 佐证 | 下滑 >30% 需减值测试 | Warning + Bull/Bear 展开 |
+| Multiples | 为负记 `N/A` 不入均值 | 同左 | 同左 | 剔除并披露 |
+
+脚本必须含 `validate_bounds()` 失败即抛错，中止写入 SUCCESS。
+
+## WACC 推导 (v1.1.0 新增，防拍脑袋)
+- `WACC = Ke*E/(D+E) + Kd*(1-T)*D/(D+E)`；`Ke = Rf + β*ERP (+size/country alpha, 单列披露)`。
+- Rf 用 10Y 国债 (备注日期)，β 用 2–5Y 周频回归或 Barra/同业 median (注明源)，ERP 4%–6% 默认并做 ±1pp 敏感性。Kd 用实际加权票息或 YTM，不得直接套 Rf+200bp 了事。
 
 ## Modeling Principles
-1. **Hardcode Minimization**: All inputs must be in a dedicated "Assumptions" section. No hardcoded numbers inside formulas.
-2. **Formula Transparency**: Use clear, traceable formulas. Avoid deeply nested IF statements; use helper rows/columns.
-3. **Balance Checks**: Every model must have a "Balance Check" (e.g., Assets - Liabilities - Equity = 0). Any non-zero result must trigger a warning.
-4. **Actuals vs. Forecasts**: Clearly distinguish between historical data (actuals) and projected data (forecasts) using different formatting or separate sheets.
+1. **Hardcode Minimization**: All inputs in "Assumptions" section.
+2. **Formula Transparency**: Traceable formulas; no deep nested IF; helper rows.
+3. **Balance Checks**: `Assets - Liabilities - Equity = 0` (容差 `0.5%*TA`)；非零 Warning 并阻断 SUCCESS。
+4. **Actuals vs. Forecasts**: 历史/预测分 sheet + 条件格式区分；预测期 ≤5Y (CU/成长期可 10Y 但需分段 g)。
+5. **终值二选一披露**: Gordon + Exit Multiple 双算，差异 > 20% 必须解释取舍。
 
-## Workflow for Spreadsheet Tasks
-- **Audit**: Trace the flow of a specific value from the final output back to the raw assumption.
-- **Scenario Analysis**: Create "Base", "Bull", and "Bear" cases by varying key drivers (e.g., Revenue Growth, WACC).
-- **Sensitivity Analysis**: Build data tables to show how the valuation changes with +/- 1% shifts in critical variables.
+## Workflow
+- **Audit**: 从终值回 trace 到 assumption，保留 trace log。
+- **Scenario**: Base/Bull/Bear 三表 (growth/WACC/margin 联动，禁止只改 g)。
+- **Sensitivity**: WACC ±1pp × g ±0.5pp 双维表 + 龙卷风图数据表。
 
 ## Deliverables
-- Provide models in a format that is editable (CSV/XLSX compatible) with a "Model Map" explaining the structure.
+- Editable CSV/XLSX + "Model Map" (`models/MODEL_MAP.md`)；每次运行写 `models/run_log.jsonl` (input hash, output hash, bounds pass/fail)。

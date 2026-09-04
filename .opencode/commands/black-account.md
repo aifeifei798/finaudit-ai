@@ -4,6 +4,7 @@ agent: black-account-checker
 ---
 
 请加载 black-account-checker skill，按其调查六步法执行查黑账流程。用户输入：$ARGUMENTS
+输入优先 `workspace/targets/{TICKER}_{PERIOD}/raw/` (兼容 `workspace/raw/`)；金额先归一绝对值+ISO 币种；禁止网络外发账户明文。
 
 ### 必查项
 - 数据清洗与字段标准化

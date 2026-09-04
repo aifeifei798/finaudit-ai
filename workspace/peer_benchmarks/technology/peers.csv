@@ -1,0 +1,3 @@
+ticker,name,revenue,ebitda_margin,mktcap,source,asof
+PEER1,Example Peer A,5000000000,0.22,8000000000,filing,2025-12-31
+PEER2,Example Peer B,6000000000,0.20,9000000000,filing,2025-12-31

@@ -1,0 +1,7 @@
+sw_L1,sw_name,hs_industry,gics_sector,notes
+801010,农林牧渔,必需性消费,Consumer Staples,示例行
+801030,基础化工,原材料,Materials,示例行
+801110,家用电器,可选消费,Consumer Discretionary,示例行
+801230,交通运输,工业,Industrials,示例行
+801710,建筑材料,地产建筑,Real Estate,示例行
+801760,电力设备,工业,Industrials,示例行

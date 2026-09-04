@@ -1,22 +1,33 @@
+---
+name: excel-export-skill
+description: "活表导出 — openpyxl公式注入、Assumptions联动、勾稽校验。Use when 需要生成可编辑.xlsx估值模型时。"
+license: MIT
+compatibility: opencode
+metadata:
+  author: "金融安全审计组"
+  version: "1.1.0"
+---
+
 # Excel Export Skill
 
 This skill enables the generation of "Living Excel" models where the output is not just a static table, but a functional spreadsheet with active formulas.
 
 ## Technical Implementation
-- **Library**: Use `openpyxl` for creating .xlsx files with formulas.
-- **Formula Injection**: Instead of writing the result of a calculation (e.g., `100 * 1.05`), write the Excel formula (e.g., `=B2*C2`).
-- **Structure**:
-  - **Assumptions Sheet**: All input variables (Growth Rate, WACC, Tax Rate) in a dedicated sheet.
-  - **Calculation Sheet**: Linked to the Assumptions sheet.
-  - **Summary Sheet**: High-level outputs (Enterprise Value, Share Price) linked to the Calculation sheet.
+- **Library**: Use `openpyxl` for .xlsx with formulas (`data_only=False` for audit)。
+- **Formula Injection**: Write `=B2*C2` not `105`; 输入/计算/汇总三层分离：
+  - **Assumptions Sheet**: Growth, WACC, Tax, NWC assumptions (黄色底纹 + 数据验证)。
+  - **Calculation Sheet**: Linked to Assumptions (禁止硬编码数字，审计时 `Ctrl+`` 全公式可读)。
+  - **Summary Sheet**: EV/Equity Value/Share Price linked to Calculation + ` sensitivity table` 位置预留。
+- **Canonical Path (v1.1.0 统一)**: `workspace/targets/{TICKER}_{PERIOD}/models/{Company}_Valuation_Model.xlsx` (legacy `workspace/models/` 禁止新写)。
 
 ## Delivery Standard
-1. **Dynamic Inputs**: The user must be able to change a single cell in the "Assumptions" sheet and see the final valuation update automatically.
-2. **Balance Check**: Include a "Check" column that returns `TRUE` if Assets = Liabilities + Equity, and `FALSE` otherwise.
-3. **Audit Trail**: Every formula must be simple and traceable. Avoid complex array formulas that are hard to audit.
+1. **Dynamic Inputs**: Change one Assumptions cell → Summary auto-updates (交付前改 2 个假设做联动测试并截图/log)。
+2. **Balance Check**: `=IF(ABS(Assets-Liab-Equity)<=MAX(0.005*TA,scale),"TRUE","FALSE")` 独立 Check 列/行；FALSE 禁止标 SUCCESS。
+3. **Audit Trail**: Simple traceable formulas; no array black-box; 每个跨表引用加批注 `source: Assumptions!B4`。
+4. **Post-write verify (v1.1.0 新增)**: 写完后用 Python 重开 (`data_only=False`) 抽查 ≥5 个公式含跨表引用 + 用 `libreoffice --headless --convert-to csv` 或 openpyxl 计算值抽查，失败重写。记录 `models/excel_verify.log`。
 
 ## Export Workflow
-- **Step 1**: Define the model structure in Python.
-- **Step 2**: Write the formulas into the cells using `openpyxl`.
-- **Step 3**: Save the file to `workspace/models/[Company]_Valuation_Model.xlsx`.
-- **Step 4**: Provide the file path in the final report.
+- **Step 1**: Define structure in Python (`models/build_excel.py`)。
+- **Step 2**: Write formulas via `openpyxl`。
+- **Step 3**: Save to canonical path above。
+- **Step 4**: File path + verify log + Model Map reference in final report; update `pipeline-state.json: {excel: SUCCESS}`。

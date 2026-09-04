@@ -3,5 +3,5 @@
   "description": "闪电排雷模式：快速检测财务与治理高危风险",
   "agents": ["black-account-checker"],
   "skills": ["black-account-checker", "quantitative-fraud-metrics", "governance-redflags-skill"],
-  "prompt": "针对 {{target}} 执行闪电排雷。请调用 black-account-checker、quantitative-fraud-metrics 和 governance-redflags-skill，在 2 分钟内出具一份《财务与治理高危风险排雷体检单》，重点列出做空机会或暴雷隐患。"
+  "prompt": "针对 {{target}} 执行闪电排雷。输入: workspace/targets/{{target}}/raw/ (fallback workspace/raw/)。请调用 black-account-checker、quantitative-fraud-metrics 和 governance-redflags-skill，在 2 分钟内出具《财务与治理高危风险排雷体检单》，重点列出做空机会或暴雷隐患。M-Score 灰区以上必须配 Cash Verification 要求；治理按分市场质押阈值判定。结果写入 workspace/targets/{{target}}/extracted/_audit_flash.md 并更新 pipeline-state.json {fraud_metrics} 状态。超时策略: 优先 M-Score + 质押 + 审计意见，其余记 Gap。"
 }

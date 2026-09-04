@@ -1,0 +1,20 @@
+# params/cn.yaml — A股 (CAS) v1.1.0
+market: cn
+accounting: CAS
+currency: CNY
+fx_source: SAFE_mid
+fy_default_end: "12-31"
+peer_industry_map: sw31
+valuation_tier_default: mature_with_policy_premium
+bounds:
+  wacc: [0.04, 0.20]
+  g: [0.015, 0.035]
+pledge_warn: 0.50
+pledge_severe: 0.70
+pledge_critical: 0.80
+guarantee_to_na_warn: 0.30
+rpt_to_na_warn: 0.05
+halt_limit: 0.10
+filing_sources: [cninfo, sse, szse]
+fraud_lexicon: [关联占用, 存贷双高, 商誉爆雷, 审计意见购买, 资金占用]
+note_regex: ["五[、,，]\\s*\\d+", "附注\\d+"]

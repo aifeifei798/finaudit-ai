@@ -1,0 +1,21 @@
+# params/us.yaml — 美股 (US GAAP) v1.1.0
+market: us
+accounting: US_GAAP
+currency: USD
+fx_source: Fed_H10
+fy_default_end: mixed_52_53_week
+peer_industry_map: gics11
+valuation_tier_default: mature_with_ust_anchor
+bounds:
+  wacc: [0.04, 0.20]
+  g: [0.015, 0.035]
+pledge_warn: 0.50
+pledge_severe: 0.50
+pledge_critical: 0.50
+guarantee_to_na_warn: 0.20
+rpt_to_na_warn: 0.05
+halt_limit: null
+filing_sources: [edgar]
+fraud_lexicon: [ASC606, stock_compensation, comment_letter, class_action, restatement]
+note_regex: ["Item\\s*8", "Note\\s*\\d+"]
+xbrl_preferred: true
