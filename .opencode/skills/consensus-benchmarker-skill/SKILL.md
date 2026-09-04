@@ -14,7 +14,7 @@ metadata:
 
 ## 输入契约 `extracted/_consensus.csv`
 列：`metric|consensus_mean|consensus_n|asof|source|level`。来源优先级：机构终端（Bloomberg/FactSet/Wind/CapIQ，经 IAL 驱动）> 手工录入卖方研报均值（≥3 家）> 缺失记 `Gap: no consensus coverage`。
-**诚实铁律**：无覆盖禁止编造 Consensus；无 Consensus 时终稿写 `Consensus Delta: N/A (uncovered)` 并将 conviction 降一档。
+**诚实铁律**：无覆盖禁止编造 Consensus；无 Consensus 时先用当前股价反推市场内含隐含增长率作基准（打 `CONSENSUS_DATA: MARKET_IMPLIED` 标签），仍无法反推才写 `Consensus Delta: N/A (uncovered)` 并将 conviction 降一档。
 
 ## 求差计算（Python-first）
 - `Δ_EPS = (our_EPS − consensus_EPS) / |consensus_EPS|`；`Δ_g`、`Δ_Target` 同口径；每个 Δ 注明 `asof`（预期会漂移，过期 > 30 天标 stale）。

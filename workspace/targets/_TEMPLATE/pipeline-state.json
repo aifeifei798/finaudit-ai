@@ -42,6 +42,7 @@
       "at": ""
     },
     "unresolved_discrepancies": [],
+    "degraded_modules": [],
     "risk_penalty": {
       "tier": "",
       "g_bps": 0,

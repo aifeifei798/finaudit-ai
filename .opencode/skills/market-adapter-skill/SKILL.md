@@ -24,6 +24,11 @@ metadata:
 - **输入**: `extracted/_credit.csv`（列：`bond|ytm|spread_bps|price|asof|source`，覆盖境内中票/公司债 + 境外美元债 + 主体 CDS）。
 - **触发**: 任一存续债 spread > 800bps（见 `params/{cn,hk,us}.yaml: credit_distress_spread_bps`）→ 打 `CREDIT_DISTRESS`：强制去杠杆，剥夺任何“估值抄底”买入权限（最高观察仓），终稿醒目披露；`portfolio-strategist` 未读 `_credit.csv` 不得给仓位。
 - 无存续债/无报价写 `Gap: no credit coverage`，不默认安全。
+- **合成信用降级 (v1.9.0)**: 无发债标的（轻资产软件等）不得把利差记 0；自动用资产负债率 + 利息覆盖倍数算合成信用分并打 `CREDIT_DATA: SYNTHETIC` 标签，conviction 照常用 Gap 规则处理。
+
+## Microstructure Probe 微观结构探针 (v1.9.0 新增，防滑点吞噬安全边际)
+- 输出 `extracted/_execution.csv`：30 日 ADV、借券池深度、CTB 年化、涨跌停/盘前盘后规则（`asof + source` 必填）。
+- 阈值见 `params/{cn,hk,us}.yaml`（`max_position_adv_pct: 0.10`，`ctb_block_pct: 0.15`）；无借券数据不得默认可做空，写 `Gap: borrow data uncovered`。
 
 ## 附注切分正则 (分市场)
 - CN: `五[、,，]\s*\d+` / `附注\d+`；HK: `Note\s*\d+` 中英双语；US: `Item\s*8|Note\s*\d+`。语言路由：中文附注优先中文强抽取，英文优先英文模型 (见 model-tiers)。

@@ -1,0 +1,22 @@
+# Golden Benchmark — 法证金标准回归套件 v1.9.0
+# 每次核心 Agent prompt/配置/底层模型升级，必须全量回放；门禁：舞弊召回率 Recall ≥ 0.92，合规误杀率 FalseAlarm ≤ 0.08。
+# 运行：python3 eval/run_eval.py --suite eval/golden_benchmark.yaml --mode batch-autonomous
+version: "1.9.0"
+gates: {recall_min: 0.92, false_alarm_max: 0.08}
+verdict_map: {fraud: "audit 结论含 🔴 且 penalty_tier 非空", clean: "无 Unresolved 且仓位不受惩罚硬顶"}
+fraud_cases_expected_count: 25
+clean_cases_expected_count: 25
+fraud_cases:
+  - {ticker: LK, period: FY2019Q3, market: us, label: fraud, note: "瑞幸咖啡虚增收入"}
+  - {ticker: "600518", period: FY2018, market: cn, label: fraud, note: "康美药业货币资金造假"}
+  - {ticker: ENRON, period: FY2000, market: us, label: fraud, note: "安然表外实体"}
+  - {ticker: WDI, period: FY2019, market: us, label: fraud, note: "Wirecard 第三方托管缺失"}
+  - {ticker: "3333", period: FY2020, market: hk, label: fraud, note: "恒大表外债"}
+  # … 补足至 25 家：每案一行 {ticker, period, market, label: fraud, note}，用真实披露数据回放
+clean_cases:
+  - {ticker: MSFT, period: FY2023, market: us, label: clean, note: "微软白马"}
+  - {ticker: AAPL, period: FY2023, market: us, label: clean, note: "苹果白马"}
+  - {ticker: "600519", period: FY2023, market: cn, label: clean, note: "茅台白马"}
+  - {ticker: "2330", period: FY2023, market: hk, label: clean, note: "台积电白马"}
+  - {ticker: "600900", period: FY2023, market: cn, label: clean, note: "长江电力白马"}
+  # … 补足至 25 家：每案一行 {ticker, period, market, label: clean, note}

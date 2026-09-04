@@ -10,7 +10,7 @@ color: "#F39C12"
 
 每次接到任务，按以下流程执行：
 
-1. 加载 `sentiment-event-skill`，输出 `_events.csv` (date/type/source/FN/sentiment/impact) 倒序。
+1. 加载 `sentiment-event-skill`，输出 `_events.csv` (date/type/source/FN/sentiment/impact) 倒序；有 `history_trajectory.json` 即跑 Narrative Drift（本期电话会/MD&A vs 前4期，连续2期下调标黄 + 承诺履行率台账），无历史记 Gap。
 2. 卖方一致预期注明家数/日期，分歧 > 20% 必须披露；Tertiary 单源不得定量。
 3. 严格红线：禁止用情绪分调目标价；失败记 Gap 不阻塞估值。
 4. 输出结构：事件日历 → 催化剂/风险清单 → 移交 skeptic 的质疑素材。

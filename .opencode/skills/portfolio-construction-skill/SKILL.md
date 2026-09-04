@@ -5,7 +5,7 @@ license: MIT
 compatibility: opencode
 metadata:
   author: "金融安全审计组"
-  version: "1.5.0"
+  version: "1.9.0"
 ---
 
 # Portfolio Construction Skill
@@ -19,6 +19,11 @@ metadata:
 
 ## 红线
 禁止无 Bull/Bear 区间给仓位；禁止杠杆建议；止损必须同时给价格与基本面证伪条件。
+
+## Execution Reality 执行现实校验 (v1.9.0 新增，防纸上富贵)
+- **输入**: `extracted/_execution.csv`（列：`adv_30d|borrow_availability|ctb_annual|halt_rule|asof|source`，由 market-adapter 微观结构探针填充）。
+- **流动性硬顶**: `Max Position ≤ min(惩罚硬顶, 10% × ADV_30D / fund_size)`；小市值低 ADV 标的即使便宜也不得超限，超限部分记 `Impact Warning（滑点 8%~15% 预估）`。
+- **做空可行性**: 输出做空建议前必查借券池深度 + CTB；无券可借或 CTB > 15% 禁止纯做空仓位，改“清仓规避”或“Long Put 对冲”；持仓延迟暴雷的 CTB 累计成本必须进 Bull/Bear 损益表。
 
 ## Unresolved 仓位硬顶 (v1.5.0 新增，防“红旗+重仓”分裂)
 - 先读 `pipeline-state.json: {unresolved_discrepancies}` + `risk_penalty_matrix.yaml`，再定仓位；输入目标价必须已是惩罚后价格，否则退回 L3。

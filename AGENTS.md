@@ -1,4 +1,4 @@
-# Agents Guide - FinAudit AI (v1.8.0 全栈)
+# Agents Guide - FinAudit AI (v1.9.0 全栈)
 
 ## Agents & Skills (19 agents, T1/T2/T3 分级；排雷归 fraud-screener，流水取证归 black-account-checker)
 | 层 | Agent | Skills | Tier |
@@ -62,7 +62,14 @@
 4. **血统图**：`models/lineage_manifest.json`（关键数值的 `derived_from` 因果链），report-writer 渲染附录，judge-qa 抽查。
 5. **摄取抽象层**：`params/ingestion.yaml` 双驱动（DirectScraper / InstitutionalTerminal），输出契约不变。
 
-## Workspace (Canonical v1.8.0)
+## v1.9.0 演进（第六阶生产执行前沿）
+1. **交易执行**：`_execution.csv`（ADV/CTB/借券池）——仓位≤`min(硬顶,10%×ADV)`，无券/CTB>15%禁纯做空改规避或 Long Put。
+2. **叙事漂移**：`history_trajectory.json` + Narrative Drift Tracker（前4期ΔTone，连续2期下调标黄 + 承诺履行率台账）。
+3. **Golden回归**：`eval/golden_benchmark.yaml` + `run_eval.py`（25舞弊+25白马，Recall≥92%/误杀≤8%，CI 门禁）。
+4. **血统剪枝**：Top20关键路径全边 + 惰性哈希指针，manifest≤500KB。
+5. **优雅降级**：合成信用分（`CREDIT_DATA: SYNTHETIC`）+ 股价反推隐含共识（`MARKET_IMPLIED`）+ 完备度矩阵，`degraded_modules[]` 留痕。
+
+## Workspace (Canonical v1.9.0)
 - `workspace/targets/{TICKER}_{PERIOD}/`: 独立沙盒 (唯一写入目标)。
   - `raw/`、`extracted/` (领域分块 + `footnotes_focus/` + `_footnote_index.csv` + `evidence_inbox/` + `_bibliography.csv` + `_reconciliation_log.csv` + `_assumptions.csv` + `_peers.csv` + `fx_rates.csv` + `macro_brief.md` + `_events.csv` + `_esg_flags.csv`)、`models/` (`run_log.jsonl` + `MODEL_MAP.md` + `.xlsx` + `charts/` + `position_table.csv`)、`pipeline-state.json` (含 run_mode/restatement_policy/discount_currency/valuation_engine/segments/skeptic round/unresolved/risk_penalty/webhook)。
 - `workspace/targets/_TEMPLATE/`：脚手架；`workspace/params/{cn,hk,us}.yaml` (rf_anchor/erp/crp/discount规则) + `valuation_routing.yaml`；`workspace/peer_benchmarks/`：peer 库 + `sw_hs_gics_mapping.csv`；`workspace/reports/`：终稿；`workspace/reviews/`：双签收 + `webhook_payload.json`。

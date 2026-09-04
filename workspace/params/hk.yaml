@@ -22,6 +22,8 @@ pledge_critical: 0.50
 guarantee_to_na_warn: 0.20
 rpt_to_na_warn: 0.05
 credit_distress_spread_bps: 800
+max_position_adv_pct: 0.10
+ctb_block_pct: 0.15
 halt_limit: null
 filing_sources: [hkexnews, hkex_enquiry]
 fraud_lexicon: [老千股, 供股摊薄, 核数师辞任, 合股, 配售]
